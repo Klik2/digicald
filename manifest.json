@@ -1,0 +1,22 @@
+
+{
+  "name": "DIGICALD: Digital Calendar Universe",
+  "short_name": "DIGICALD",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://github.com/vandratop/Yuk/blob/6f2acfc73dc237a452651424a0c12b62fdd800df/DGCALD/DIGICALD.png?raw=true",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://github.com/vandratop/Yuk/blob/6f2acfc73dc237a452651424a0c12b62fdd800df/DGCALD/DIGICALD.png?raw=true",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="DIGICALD: Digital Calendar Universe - The ultimate multi-calendar application featuring Gregorian, Hijri, Javanese, Chinese, and more. Real-time conversion, GenAI image generation, and productivity tools." />
+    <meta name="keywords" content="Calendar, Digital Calendar, Hijri, Javanese, Chinese Calendar, Weton, Date Converter, GenAI, Productivity, World Clock, Holiday, Scheduler, PWA" />
+    <meta name="author" content="Te_eR Inovative" />
+    <meta name="theme-color" content="#0f172a" />
+    
+    <title>DIGICALD</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="https://github.com/vandratop/Yuk/blob/6f2acfc73dc237a452651424a0c12b62fdd800df/DGCALD/DIGICALD.png?raw=true" type="image/png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiRElHSUNBTEQiLCJzaG9ydF9uYW1lIjoiRElHSUNBTEQiLCJzdGFydF91cmwiOiIvIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBmMTcyYSIsInRoZW1lX2NvbG9yIjoiIzBmMTcyYSIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2dpdGh1Yi5jb20vdmFuZHJhdG9wL1l1ay9ibG9iLzZmMmFjZmM3M2RjMjM3YTQ1MjY1MTQyNGEwYzEyYjYyZmRkODAwZGYvREdDQUxEL0RJR0lDQUxELnBuZz9yYXc9dHJ1ZSIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9wbmciHSwieyJzcmMiOiJodHRwczovL2dpdGh1Yi5jb20vdmFuZHJhdG9wL1l1ay9ibG9iLzZmMmFjZmM3M2RjMjM3YTQ1MjY1MTQyNGEwYzEyYjYyZmRkODAwZGYvREdDQUxEL0RJR0lDQUxELnBuZz9yYXc9dHJ1ZSIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9wbmcifV19">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&family=Fredoka:wght@300..700&family=Jannah&display=swap" rel="stylesheet">
+    
+    <!-- Native Script Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&family=Noto+Sans+Javanese&family=Noto+Sans+SC:wght@400;700&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+Thai:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+      /* Cyberpunk Aesthetics */
+      .font-cyber { font-family: 'Orbitron', sans-serif; }
+      .font-jannah { font-family: 'Rajdhani', sans-serif; } /* Simulating Jannah style with Rajdhani */
+      .font-fredoka { font-family: 'Fredoka', sans-serif; }
+      
+      /* Native Fonts */
+      .font-arabic { font-family: 'Noto Sans Arabic', sans-serif; }
+      .font-javanese { font-family: 'Noto Sans Javanese', sans-serif; }
+      .font-chinese { font-family: 'Noto Sans SC', sans-serif; }
+      .font-japanese { font-family: 'Noto Sans JP', sans-serif; }
+      .font-korean { font-family: 'Noto Sans KR', sans-serif; }
+      .font-thai { font-family: 'Noto Sans Thai', sans-serif; }
+      .font-hindi { font-family: 'Noto Sans Devanagari', sans-serif; }
+
+      .glass-panel {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      
+      .neon-border {
+        box-shadow: 0 0 5px #06b6d4, 0 0 10px #06b6d4 inset;
+      }
+      
+      .neon-text {
+        text-shadow: 0 0 5px #06b6d4, 0 0 10px #06b6d4;
+      }
+
+      .blink {
+        animation: blink-animation 2s infinite;
+      }
+
+      @keyframes blink-animation {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+      }
+
+      /* Dynamic Frame Blink */
+      .frame-blink {
+        animation: frame-pulse 3s infinite alternate;
+      }
+      
+      @keyframes frame-pulse {
+        0% { box-shadow: 0 0 10px #06b6d4; border-color: #06b6d4; }
+        100% { box-shadow: 0 0 20px #a855f7, 0 0 10px #a855f7 inset; border-color: #a855f7; }
+      }
+
+      /* Glitch Effect */
+      .glitch {
+        position: relative;
+        color: white;
+      }
+      .glitch::before, .glitch::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #0f172a;
+      }
+      .glitch::before {
+        left: 2px;
+        text-shadow: -1px 0 red;
+        clip: rect(24px, 550px, 90px, 0);
+        animation: glitch-anim-2 3s infinite linear alternate-reverse;
+      }
+      .glitch::after {
+        left: -2px;
+        text-shadow: -1px 0 blue;
+        clip: rect(85px, 550px, 140px, 0);
+        animation: glitch-anim 2.5s infinite linear alternate-reverse;
+      }
+      @keyframes glitch-anim {
+        0% { clip: rect(35px, 9999px, 11px, 0); }
+        100% { clip: rect(68px, 9999px, 96px, 0); }
+      }
+      @keyframes glitch-anim-2 {
+        0% { clip: rect(10px, 9999px, 86px, 0); }
+        100% { clip: rect(4px, 9999px, 140px, 0); }
+      }
+
+      /* Interactive Spotlight */
+      .interactive-spotlight {
+        background: radial-gradient(600px circle at var(--x) var(--y), rgba(6,182,212,0.15), transparent 40%);
+      }
+      
+      body.light-mode {
+        background-color: #f3f4f6;
+        color: #1f2937;
+      }
+      
+      /* Task Animations */
+      @keyframes strike {
+          0%   { width : 0; }
+          100% { width: 100%; }
+      }
+      .task-completed {
+          position: relative;
+          color: #9ca3af;
+          transition: color 0.3s ease;
+      }
+      .task-completed::after {
+          content: ' ';
+          position: absolute;
+          top: 50%;
+          left: 0;
+          width: 100%;
+          height: 1px;
+          background: #06b6d4;
+          animation-name: strike;
+          animation-duration: 0.3s;
+          animation-timing-function: linear;
+          animation-iteration-count: 1;
+          animation-fill-mode: forwards; 
+      }
+
+      /* Loading Animation */
+      .loader-cyber {
+          width: 24px;
+          height: 24px;
+          border: 2px solid #06b6d4;
+          border-top: 2px solid transparent;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+      }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+      /* Print Styles */
+      @media print {
+        body { background: white; color: black; }
+        .no-print { display: none !important; }
+        .print-only { display: block !important; }
+      }
+      
+      /* Hide Google Translate Toolbar */
+      .goog-te-banner-frame.skiptranslate {
+          display: none !important;
+      } 
+      body {
+          top: 0px !important; 
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "path": "https://esm.sh/path@^0.12.7",
+    "vite": "https://esm.sh/vite@^7.2.7",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "url": "https://esm.sh/url@^0.11.4",
+    "html2canvas": "https://esm.sh/html2canvas@^1.4.1",
+    "jspdf": "https://esm.sh/jspdf@^2.5.1"
+  }
+}
+</script>
+<script>
+    // Disable Right Click (Copy Protection)
+    document.addEventListener('contextmenu', event => event.preventDefault());
+</script>
+<!-- Google Translate Script -->
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+  }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-[#0f172a] text-white overflow-x-hidden transition-colors duration-300 select-none">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
