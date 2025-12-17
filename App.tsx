@@ -66,6 +66,7 @@ const ASSETS = {
     ICON_KOREAN: "https://github.com/vandratop/Yuk/blob/17832c2f74458a61a7e05bafd84e78a8d6acecb4/DGCALD/DIGICALD-Sub-page_korean.png?raw=true",
     ICON_THAI: "https://github.com/vandratop/Yuk/blob/17832c2f74458a61a7e05bafd84e78a8d6acecb4/DGCALD/DIGICALD-Sub-page_thai.png?raw=true",
     ICON_IRAN: "https://github.com/vandratop/Yuk/blob/17832c2f74458a61a7e05bafd84e78a8d6acecb4/DGCALD/DIGICALD-Sub-page_10.png?raw=true",
+    BTN_KOFI: "https://github.com/vandratop/Yuk/blob/872daa6f963613ba58fc4ff71f886beed94ff15d/support_me_on_kofi_beige.png?raw=true"
 };
 
 // --- Types for Global Window ---
@@ -79,10 +80,8 @@ declare global {
 
 // --- Starfield Component ---
 const Starfield = () => {
-    // Generates stars and comets using CSS animations
     return (
         <div className="starfield">
-            {/* Generate stars */}
             {Array.from({ length: 50 }).map((_, i) => (
                 <div
                     key={`star-${i}`}
@@ -96,7 +95,6 @@ const Starfield = () => {
                     } as any}
                 />
             ))}
-            {/* Generate comets */}
             {Array.from({ length: 3 }).map((_, i) => (
                 <div
                     key={`comet-${i}`}
@@ -133,11 +131,9 @@ const TutorialOverlay = ({ isOpen, onClose }: any) => {
                 setTargetRect(el.getBoundingClientRect());
                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
             } else {
-                // If element not found (e.g. hidden), skip
                 if (step < steps.length - 1) setStep(s => s + 1);
             }
         };
-        // Small delay to ensure rendering
         setTimeout(updateRect, 300);
         window.addEventListener('resize', updateRect);
         return () => window.removeEventListener('resize', updateRect);
@@ -152,7 +148,6 @@ const TutorialOverlay = ({ isOpen, onClose }: any) => {
 
     return (
         <div className="fixed inset-0 z-[9999] bg-black/80 flex flex-col items-center justify-center transition-all duration-500">
-            {/* Spotlight Hole */}
             {targetRect && (
                 <div 
                     className="absolute border-2 border-cyan-500 shadow-[0_0_50px_#06b6d4] rounded-lg transition-all duration-500 ease-in-out box-content pointer-events-none"
@@ -192,17 +187,18 @@ const Background = ({ isDark, themeName, showStars }: { isDark: boolean, themeNa
     );
   }
 
+  // Updated Background Images with 50% opacity in style
   let bgImage = "https://picsum.photos/id/903/1920/1080";
   switch(themeName) {
-      case 'hijri': bgImage = "https://img.freepik.com/free-vector/gradient-islamic-pattern-background_23-2149122822.jpg"; break;
-      case 'javanese': bgImage = "https://img.freepik.com/free-vector/traditional-batik-pattern-background_53876-116346.jpg"; break;
-      case 'chinese': bgImage = "https://img.freepik.com/free-vector/chinese-new-year-pattern-background_53876-116347.jpg"; break;
-      case 'bazi': bgImage = "https://img.freepik.com/free-vector/chinese-style-pattern-background_53876-116348.jpg"; break;
-      case 'japan': bgImage = "https://img.freepik.com/free-vector/japanese-wave-pattern-background_53876-116349.jpg"; break;
-      case 'korean': bgImage = "https://img.freepik.com/free-vector/korean-traditional-pattern-background_53876-116350.jpg"; break;
-      case 'thai': bgImage = "https://img.freepik.com/free-vector/thai-pattern-background_53876-116351.jpg"; break;
-      case 'iranian': bgImage = "https://img.freepik.com/free-vector/persian-pattern-background_53876-116352.jpg"; break;
-      case 'hindi': bgImage = "https://img.freepik.com/free-vector/indian-mandala-pattern-background_53876-116353.jpg"; break;
+      case 'hijri': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_hijri.png?raw=true"; break;
+      case 'javanese': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_javanese.png?raw=true"; break;
+      case 'chinese': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_chinese.png?raw=true"; break;
+      case 'bazi': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_bazi.png?raw=true"; break;
+      case 'japan': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_japan.png?raw=true"; break;
+      case 'korean': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_korean.png?raw=true"; break;
+      case 'thai': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_thai.png?raw=true"; break;
+      case 'iranian': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_iranian.png?raw=true"; break;
+      case 'hindi': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_hindi.png?raw=true"; break;
       default: bgImage = "https://picsum.photos/id/903/1920/1080";
   }
 
@@ -217,36 +213,38 @@ const Background = ({ isDark, themeName, showStars }: { isDark: boolean, themeNa
 
 // --- Header ---
 const Header = ({ onToggleMenu, onToggleSettings, onToggleLanguage, subPageTitle, onBack, isDark, isMenuOpen, isLangMenuOpen, installPwa }: any) => (
-    <header className={`fixed top-0 left-0 right-0 z-50 border-b h-16 flex items-center justify-between px-4 transition-colors duration-300 no-print ${isDark ? 'glass-panel border-cyan-500/30' : 'bg-white/90 border-gray-200 shadow-sm'}`}>
-        <div className="flex items-center gap-4 relative">
+    <header className={`fixed top-0 left-0 right-0 z-50 border-b h-16 flex items-center justify-between px-2 md:px-4 transition-colors duration-300 no-print ${isDark ? 'glass-panel border-cyan-500/30' : 'bg-white/90 border-gray-200 shadow-sm'}`}>
+        <div className="flex items-center gap-2 md:gap-4 relative z-20 flex-shrink-0">
             {subPageTitle && (
-                <button onClick={onBack} className="text-2xl hover:scale-110 transition-transform" title="Back">🔙</button>
+                <button onClick={onBack} className="text-xl md:text-2xl hover:scale-110 transition-transform" title="Back">🔙</button>
             )}
-            <button id="menu-btn" onClick={onToggleMenu} className={`p-2 transition-colors ${isDark ? 'text-cyan-400 hover:text-white' : 'text-gray-700 hover:text-black'} ${isMenuOpen ? 'bg-white/10 rounded-full' : ''}`} title="Menu">
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+            <button id="menu-btn" onClick={onToggleMenu} className={`p-1.5 transition-colors ${isDark ? 'text-cyan-400 hover:text-white' : 'text-gray-700 hover:text-black'} ${isMenuOpen ? 'bg-white/10 rounded-full' : ''}`} title="Menu">
+                <svg className="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
-            <button id="install-btn" onClick={installPwa} className="text-2xl hover:scale-110 transition-transform p-1 animate-pulse" title="Install App">
+            <button id="install-btn" onClick={installPwa} className="text-xl hover:scale-110 transition-transform p-1 animate-pulse" title="Install App">
                 📥
             </button>
         </div>
-        <div className="flex flex-col items-center absolute left-1/2 transform -translate-x-1/2">
+        
+        <div className="flex flex-col items-center justify-center absolute left-0 right-0 pointer-events-none z-10 px-14">
             {subPageTitle ? (
-                    <h1 className={`text-xl md:text-2xl font-fredoka font-bold tracking-wider ${isDark ? 'text-white' : 'text-gray-800'}`} data-text={subPageTitle}>{subPageTitle}</h1>
+                    <h1 className={`text-sm md:text-2xl font-fredoka font-bold tracking-wider truncate max-w-full ${isDark ? 'text-white' : 'text-gray-800'}`} data-text={subPageTitle}>{subPageTitle}</h1>
             ) : (
-                <h1 id="app-title" className="text-3xl font-fredoka text-[#00594C] font-bold" data-text="DIGICALD">DIGICALD</h1>
+                <h1 id="app-title" className="text-xl md:text-3xl font-fredoka text-[#00594C] font-bold truncate max-w-full" data-text="DIGICALD">DIGICALD</h1>
             )}
         </div>
-        <div className="flex items-center gap-2 relative">
-            <button onClick={onToggleLanguage} className={`text-2xl hover:scale-110 transition-transform p-1 rounded ${isLangMenuOpen ? 'bg-white/10' : ''}`} title="Translate / Language">🇬🇧</button>
-            <button id="settings-btn" onClick={onToggleSettings} className="p-2 transition-colors" title="Settings">
-                <img src={ASSETS.ICON_SETTINGS} alt="Settings" className="w-8 h-8 animate-spin-slow" />
+
+        <div className="flex items-center gap-2 relative z-20 flex-shrink-0">
+            <button onClick={onToggleLanguage} className={`text-xl hover:scale-110 transition-transform p-1 rounded ${isLangMenuOpen ? 'bg-white/10' : ''}`} title="Translate / Language">🇬🇧</button>
+            <button id="settings-btn" onClick={onToggleSettings} className="p-1.5 transition-colors" title="Settings">
+                <img src={ASSETS.ICON_SETTINGS} alt="Settings" className="w-6 h-6 md:w-8 md:h-8 animate-spin-slow" />
             </button>
         </div>
     </header>
 );
 
 // --- Menus ---
-const MainMenu = ({ isOpen, onClose, onViewChange, onShowGuide, onShowTerms, onShowFAQ, onShowContact, onShowFindUs }: any) => {
+const MainMenu = ({ isOpen, onClose, onViewChange, onShowGuide, onShowTerms, onShowFAQ, onShowFindUs }: any) => {
     if (!isOpen) return null;
     return (
         <div className="absolute top-16 left-4 z-[250] bg-[#0f172a] border border-cyan-500 rounded-lg p-2 w-56 shadow-xl neon-border animate-fade-in">
@@ -254,7 +252,7 @@ const MainMenu = ({ isOpen, onClose, onViewChange, onShowGuide, onShowTerms, onS
                 <button onClick={() => { onShowGuide(); onClose(); }} className="w-full text-left p-2 text-white hover:bg-cyan-900/50 hover:text-cyan-400 text-sm rounded">📖 User Guide</button>
                 <button onClick={() => { onShowTerms(); onClose(); }} className="w-full text-left p-2 text-white hover:bg-cyan-900/50 hover:text-cyan-400 text-sm rounded">📜 Terms & Policy</button>
                 <button onClick={() => { onShowFAQ(); onClose(); }} className="w-full text-left p-2 text-white hover:bg-cyan-900/50 hover:text-cyan-400 text-sm rounded">❓ FAQ</button>
-                <button onClick={() => { onShowContact(); onClose(); }} className="w-full text-left p-2 text-white hover:bg-cyan-900/50 hover:text-cyan-400 text-sm rounded">✉️ Contact Us</button>
+                <a href="mailto:hijr.time@gmail.com" onClick={() => onClose()} className="block w-full text-left p-2 text-white hover:bg-cyan-900/50 hover:text-cyan-400 text-sm rounded">✉️ Contact Us</a>
                 <button onClick={() => { onShowFindUs(); onClose(); }} className="w-full text-left p-2 text-white hover:bg-cyan-900/50 hover:text-cyan-400 text-sm rounded">🔍 Find Us</button>
             </div>
             <div className="text-xs text-gray-500 px-2 pt-1 font-bold">Calendars</div>
@@ -278,9 +276,7 @@ const MainMenu = ({ isOpen, onClose, onViewChange, onShowGuide, onShowTerms, onS
 
 const SettingsMenu = ({ isOpen, onClose, settings, onUpdate, onLogout, onPrintPreview, toggleFullscreen, onExport }: any) => {
     if (!isOpen) return null;
-    
     const [showShareMenu, setShowShareMenu] = useState(false);
-
     return (
         <div className="fixed top-16 right-4 z-[250] bg-[#0f172a] border border-cyan-500 rounded-lg p-4 w-72 shadow-xl text-white neon-border no-print animate-fade-in max-h-[80vh] overflow-y-auto">
              <div className="flex justify-between items-center mb-3 border-b border-gray-700 pb-2">
@@ -361,7 +357,6 @@ const SettingsMenu = ({ isOpen, onClose, settings, onUpdate, onLogout, onPrintPr
     );
 };
 
-// ... (LanguageMenu, TaskModal, EventModal, ImageResultModal, TextModal, ContactModal, FindUsModal, PrintPreviewModal remain mostly the same, minor refactoring included if needed)
 const LanguageMenu = ({ isOpen, onClose, currentLang, onLangChange }: any) => {
     if (!isOpen) return null;
     return (
@@ -380,7 +375,7 @@ const LanguageMenu = ({ isOpen, onClose, currentLang, onLangChange }: any) => {
     );
 };
 
-// --- AI Template Builder (Restructured) ---
+// ... (AiTemplateBuilder, ImageResultModal, TextModal, ContactModal, FindUsModal, PrintPreviewModal, TaskModal, EventModal remain same, shortened for brevity)
 const AiTemplateBuilder = ({ isOpen, onClose, onImageGenerated }: any) => {
     const [activeTab, setActiveTab] = useState('Ratio');
     const [selections, setSelections] = useState({
@@ -431,39 +426,10 @@ const AiTemplateBuilder = ({ isOpen, onClose, onImageGenerated }: any) => {
 
                  {/* Tab Content */}
                  <div className="flex-1 overflow-y-auto mb-4 bg-black/20 p-2 rounded">
-                    {activeTab === 'Ratio' && (
-                        <div className="flex gap-4 justify-center">
-                            {AiOptionsData.ratio.map(r => (
-                                <button key={r} onClick={() => updateSelection('ratio', r)} className={`flex flex-col items-center gap-2 p-4 border rounded hover:bg-gray-800 ${selections.ratio === r ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600'}`}>
-                                    <div className={`border border-white ${r === '1:1' ? 'w-10 h-10' : r === '16:9' ? 'w-16 h-9' : 'w-9 h-16'}`}></div>
-                                    <span className="text-xs">{r}</span>
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                    {activeTab === 'Background' && (
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                            {AiOptionsData.background.map(b => (
-                                <button key={b} onClick={() => updateSelection('background', b)} className={`flex flex-col items-center p-2 border rounded hover:bg-gray-800 ${selections.background === b ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600'}`}>
-                                    <div className="w-full h-12 bg-gray-700 mb-1 rounded flex items-center justify-center text-[10px] text-gray-400">IMG</div>
-                                    <span className="text-xs capitalize">{b}</span>
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                    {activeTab === 'Camera' && (
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                            {AiOptionsData.camera.map(c => (
-                                <button key={c} onClick={() => updateSelection('camera', c)} className={`flex flex-col items-center p-2 border rounded hover:bg-gray-800 ${selections.camera === c ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600'}`}>
-                                    <div className="w-full h-12 bg-gray-700 mb-1 rounded flex items-center justify-center text-[10px] text-gray-400">IMG</div>
-                                    <span className="text-xs capitalize">{c}</span>
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                    {['Style', 'Light', 'Weather', 'Time'].includes(activeTab) && (
+                    {/* ... (Render options based on activeTab - similar to before) */}
+                    {['Style', 'Light', 'Weather', 'Time', 'Ratio', 'Background', 'Camera'].includes(activeTab) && (
                         <div className="flex flex-wrap gap-2 justify-center">
-                            {AiOptionsData[activeTab.toLowerCase() as keyof typeof AiOptionsData]?.map(opt => (
+                            {(activeTab === 'Ratio' ? AiOptionsData.ratio : activeTab === 'Background' ? AiOptionsData.background : activeTab === 'Camera' ? AiOptionsData.camera : AiOptionsData[activeTab.toLowerCase() as keyof typeof AiOptionsData])?.map(opt => (
                                 <button key={opt} onClick={() => updateSelection(activeTab.toLowerCase(), opt)} className={`px-3 py-1 rounded border text-sm capitalize hover:bg-gray-800 ${selections[activeTab.toLowerCase() as keyof typeof selections] === opt ? 'bg-cyan-600 border-cyan-400' : 'bg-transparent border-gray-600'}`}>
                                     {opt}
                                 </button>
@@ -507,7 +473,6 @@ const AiTemplateBuilder = ({ isOpen, onClose, onImageGenerated }: any) => {
     );
 };
 
-// ... (Other components like ImageResultModal, etc. remain present)
 const ImageResultModal = ({ isOpen, onClose, imageSrc, onSave }: any) => {
     if (!isOpen || !imageSrc) return null;
     return (
@@ -708,6 +673,7 @@ const CalendarView = ({ date, setDate, days, onDayClick, isDark, viewFormat, per
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const isYearly = period === CalendarPeriod.YEARLY;
     const isDaily = period === CalendarPeriod.DAILY;
+    const isHorizontal = viewFormat === CalendarViewFormat.HORIZONTAL;
 
     // Helper to get day class for high contrast in light mode
     const getDayClass = (d: any) => {
@@ -721,8 +687,8 @@ const CalendarView = ({ date, setDate, days, onDayClick, isDark, viewFormat, per
             ? (d.isToday ? 'bg-cyan-600 text-white font-bold shadow-md' : (!isDark ? lightModeClass : darkModeClass)) 
             : 'invisible';
             
-        // Enhanced red for holidays in light mode
-        const holiday = d.isHoliday ? (isDark ? '!text-red-500 font-bold' : '!text-[#D32F2F] !font-black') : '';
+        // Highlight holidays in RED based on API data
+        const holiday = d.isHoliday ? '!text-red-600 !font-extrabold' : '';
         return `${base} ${holiday}`;
     };
 
@@ -732,10 +698,35 @@ const CalendarView = ({ date, setDate, days, onDayClick, isDark, viewFormat, per
 
         if (!selectedData) return <div className="text-center p-10 text-gray-500">Date data unavailable</div>;
 
+        if (isHorizontal) {
+             return (
+                <div className={`flex flex-col items-center justify-center p-4 border rounded-lg h-full w-full relative overflow-hidden ${isDark ? 'border-cyan-500/30 bg-black/40 neon-border' : 'border-gray-400 bg-white shadow-lg'}`}>
+                    {/* Horizontal Daily - Large Display */}
+                    <div className="absolute top-2 right-4 text-xs font-cyber tracking-widest opacity-50">{date.getFullYear()}</div>
+                    <div className="flex flex-col items-center justify-center flex-1 w-full">
+                         <h2 className={`text-4xl md:text-5xl font-jannah font-bold mb-0 ${isDark ? 'text-cyan-400' : 'text-blue-800'}`}>
+                            {date.toLocaleDateString('en-US', {weekday:'long'})}
+                         </h2>
+                         <div className={`text-[120px] md:text-[180px] font-fredoka font-bold leading-none ${isDark ? 'text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'text-black'} ${selectedData.isHoliday ? '!text-red-600' : ''}`}>
+                             {selectedData.day}
+                         </div>
+                         <div className={`text-2xl md:text-3xl font-jannah uppercase tracking-widest mt-2 ${isDark ? 'text-fuchsia-400' : 'text-gray-700'}`}>
+                             {date.toLocaleDateString('en-US', {month: 'long'})}
+                         </div>
+                         <div className="mt-6 text-center border-t border-gray-600 w-3/4 pt-2">
+                             <p className={`text-lg md:text-xl font-jannah ${isDark ? 'text-yellow-400' : 'text-gray-900 font-bold'}`}>{selectedData.nativeDateStr}</p>
+                             {selectedData.isHoliday && <p className="text-red-500 font-black mt-1 animate-pulse text-xl uppercase">{selectedData.holidayName}</p>}
+                         </div>
+                    </div>
+                </div>
+             );
+        }
+
+        // Vertical Daily (Default Card)
         return (
             <div className={`flex flex-col items-center justify-center p-8 border rounded-lg min-h-[400px] w-full h-full ${isDark ? 'border-cyan-500/30 bg-black/40 neon-border' : 'border-gray-400 bg-white shadow-lg'}`}>
                 <h2 className={`text-3xl font-jannah mb-2 ${isDark ? 'text-cyan-400' : 'text-black font-bold'}`}>{date.toLocaleDateString('en-US', {weekday:'long'})}</h2>
-                <div className={`text-[150px] font-fredoka font-bold leading-none relative ${isDark ? 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]' : 'text-black'}`}>
+                <div className={`text-[150px] font-fredoka font-bold leading-none relative ${isDark ? 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]' : 'text-black'} ${selectedData.isHoliday ? '!text-red-600' : ''}`}>
                     {selectedData.day}
                 </div>
                 <div className={`text-4xl font-bold mt-4 font-fredoka ${isDark ? 'text-fuchsia-500' : 'text-purple-700'}`}>{date.getFullYear()}</div>
@@ -750,28 +741,29 @@ const CalendarView = ({ date, setDate, days, onDayClick, isDark, viewFormat, per
     if (isYearly) {
         const months = Array.from({length: 12}, (_, i) => i);
         
-        // Vertical Yearly: 3 columns (3x4 grid)
-        // Horizontal Yearly: 4 columns (4x3 grid)
-        // Responsive breakpoints: Mobile (1 col) -> Tablet (2 cols) -> Desktop (3 or 4 cols)
+        // Vertical Yearly: 3 columns x 4 rows
+        // Horizontal Yearly: 4 columns x 3 rows
+        // We use responsive classes to approximate this on varying screens
+        // On very small screens, it drops to 1 or 2 columns to maintain readability
         const gridClass = viewFormat === CalendarViewFormat.VERTICAL 
-            ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
-            : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4';
+            ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3' // Target 3 cols
+            : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'; // Target 4 cols
 
         return (
-            <div className={`grid ${gridClass} gap-4 w-full h-full overflow-y-auto pb-20 custom-scrollbar p-1`}>
+            <div className={`grid ${gridClass} gap-2 w-full h-full overflow-y-auto custom-scrollbar p-1`}>
                 {months.map(m => {
                     const mDate = new Date(date.getFullYear(), m, 1);
                     // Re-fetch logic locally for visual rendering of small months
                     const mDays = getMonthData(date.getFullYear(), m, CalendarType.GREGORIAN, "ID", "en-US", [], [], apiHolidays);
                     return (
-                        <div key={m} className={`border p-2 rounded transition-colors ${isDark ? 'border-cyan-500/20 bg-black/40 hover:border-cyan-500/60' : 'border-gray-400 bg-white hover:border-black shadow-sm'}`}>
-                            <h4 className={`text-center font-bold mb-2 text-xs uppercase tracking-widest ${isDark ? 'text-cyan-400' : 'text-black'}`}>{mDate.toLocaleString('default', { month: 'long' })}</h4>
-                            <div className="grid grid-cols-7 gap-1">
+                        <div key={m} className={`border p-1.5 rounded transition-colors ${isDark ? 'border-cyan-500/20 bg-black/40 hover:border-cyan-500/60' : 'border-gray-400 bg-white hover:border-black shadow-sm'}`}>
+                            <h4 className={`text-center font-bold mb-1 text-[10px] uppercase tracking-widest ${isDark ? 'text-cyan-400' : 'text-black'}`}>{mDate.toLocaleString('default', { month: 'long' })}</h4>
+                            <div className="grid grid-cols-7 gap-0.5">
                                 {['S','M','T','W','T','F','S'].map(d => (
-                                    <div key={d} className={`text-center text-[9px] font-bold ${isDark ? 'text-gray-500' : 'text-gray-800'}`}>{d}</div>
+                                    <div key={d} className={`text-center text-[8px] font-bold ${isDark ? 'text-gray-500' : 'text-gray-800'}`}>{d}</div>
                                 ))}
                                 {mDays.map((d, i) => (
-                                    <div key={i} className={`aspect-square flex items-center justify-center text-[9px] rounded-sm cursor-default ${getDayClass(d)}`}>
+                                    <div key={i} className={`aspect-square flex items-center justify-center text-[8px] rounded-sm cursor-default ${getDayClass(d)}`}>
                                         {d.day}
                                     </div>
                                 ))}
@@ -810,6 +802,11 @@ const CalendarView = ({ date, setDate, days, onDayClick, isDark, viewFormat, per
                                  {contentMode === CalendarContentMode.DUAL && (
                                     <span className={`text-[9px] mt-1 font-jannah ${isDark ? 'opacity-70' : 'text-gray-600'}`}>{day.nativeDay}</span>
                                 )}
+                                {day.weton && (
+                                    <span className={`text-[8px] block mt-0.5 font-jannah uppercase tracking-tighter ${isDark ? 'text-yellow-500/70' : 'text-orange-600/80'}`}>
+                                        {day.weton}
+                                    </span>
+                                )}
                                 {day.hasTasks && <div className="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full animate-pulse shadow-[0_0_5px_yellow]" title="Has Tasks"></div>}
                                 {day.hasReminders && <div className="absolute top-1 right-4 text-[8px] text-yellow-400 animate-bounce">🔔</div>}
                                 <div className="flex flex-wrap gap-1 mt-1 justify-center">
@@ -842,6 +839,7 @@ function App() {
     const [isGuest, setIsGuest] = useState(false);
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
     const subPageRef = useRef<HTMLDivElement>(null);
+    const printRef = useRef<HTMLDivElement>(null);
     const [format, setFormat] = useState<CalendarViewFormat>(CalendarViewFormat.VERTICAL);
     const [period, setPeriod] = useState<CalendarPeriod>(CalendarPeriod.MONTHLY);
     const [country, setCountry] = useState("ID");
@@ -871,7 +869,8 @@ function App() {
     const [date, setDate] = useState(new Date());
     const [appSettings, setAppSettings] = useState<AppSettings>(() => {
         const saved = localStorage.getItem('digicald_settings');
-        return saved ? JSON.parse(saved) : { theme: 'auto', zoom: 1, language: 'en-US', isFullscreen: false, taskHighlightColor: '#FFFF00' };
+        // UPDATED: Default theme is 'light'
+        return saved ? JSON.parse(saved) : { theme: 'light', zoom: 1, language: 'en-US', isFullscreen: false, taskHighlightColor: '#FFFF00' };
     });
     const [systemTheme, setSystemTheme] = useState(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
@@ -921,9 +920,46 @@ function App() {
     const isHorizontal = format === CalendarViewFormat.HORIZONTAL;
 
     // Logic for showing Starfield: Login, Main Menu, or Gregorian Subpage only.
-    // Not on Hijri, Javanese, etc unless requested.
-    // The prompt requested visual effects removal from all sub-pages but added specific animation to Gregorian.
     const showStars = !isLoggedIn || view === 'main' || (view === 'sub' && selectedCalendar === CalendarType.GREGORIAN);
+    
+    // Updated Holiday Display Block
+    const HolidayBlock = () => (
+        <div className={`w-full border p-2 rounded mt-2 ${isDark ? 'bg-black/30 border-gray-700' : 'bg-white border-gray-300'}`}>
+            <h4 className={`font-bold text-sm mb-1 ${isDark ? 'text-cyan-400' : 'text-black'}`}>Holiday Information ({country})</h4>
+            <div className={`text-xs max-h-20 overflow-y-auto ${isDark ? 'text-white' : 'text-black'}`}>
+                {apiHolidays.filter(h => { const hDate = new Date(h.date); return hDate.getMonth() === date.getMonth() && hDate.getFullYear() === date.getFullYear(); }).length > 0 ? (
+                    apiHolidays.filter(h => { const hDate = new Date(h.date); return hDate.getMonth() === date.getMonth() && hDate.getFullYear() === date.getFullYear(); }).map((h, i) => (<p key={i}><span className="text-red-600 font-bold">{h.date}:</span> {h.localName || h.name}</p>))
+                ) : <p className="opacity-50">No holidays this month.</p>}
+            </div>
+        </div>
+    );
+
+    const handleSaveFile = async (formatType: string) => {
+        if (!printRef.current) return;
+        
+        // Hide controls during capture using data-html2canvas-ignore (already added to control div)
+        const canvas = await html2canvas(printRef.current, { useCORS: true, scale: 2 });
+        
+        if (formatType === 'mpeg') {
+            alert("Video export requires external screen recording tools. Please use your device's screen recorder for high fidelity video.");
+            return;
+        }
+        
+        if (formatType === 'pdf') {
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgData = canvas.toDataURL('image/png');
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save('digicald-calendar.pdf');
+        } else {
+            const link = document.createElement('a');
+            link.download = `digicald-calendar.${formatType}`;
+            link.href = canvas.toDataURL(`image/${formatType}`);
+            link.click();
+        }
+    };
 
     const renderSubPage = () => {
         const today = new Date();
@@ -931,7 +967,6 @@ function App() {
         const todayNative = getFormattedDateString(date, selectedCalendar, appSettings.language);
         const monthNameNative = getFormattedDateString(date, selectedCalendar, appSettings.language).split(',')[0];
         const monthNameGregorian = date.toLocaleDateString(appSettings.language, { month: 'long', year: 'numeric' });
-        const holidaysThisMonth = apiHolidays.filter(h => { const hDate = new Date(h.date); return hDate.getMonth() === date.getMonth() && hDate.getFullYear() === date.getFullYear(); });
         const currentMedia = mediaList[currentMediaIndex];
 
         // Navigation Handlers
@@ -956,70 +991,95 @@ function App() {
         };
 
         return (
-            <div ref={subPageRef} className={`flex flex-col gap-6 w-full ${isHorizontal ? 'max-w-full' : 'max-w-4xl'} bg-transparent transition-all duration-500`}>
-                <div className={`text-center p-4 rounded bg-black/40 backdrop-blur-sm shadow-lg w-full ${isDark ? 'border border-cyan-500/30' : 'border border-gray-400 bg-white/80'}`}>
-                        <h2 className={`font-jannah text-[14px] font-bold mb-1 ${isDark ? 'text-white' : 'text-black'}`}>Today</h2>
-                        <h3 className={`font-jannah text-[14px] ${isDark ? 'text-white' : 'text-gray-900'}`}>{todayGregorian}</h3>
-                        <h3 className={`font-jannah text-[16px] mt-1 ${isDark ? 'text-[#00FFDF]' : 'text-blue-700 font-bold'}`}>{todayNative}</h3>
-                </div>
-
-                {/* Updated Navigation Bar */}
-                <div className={`flex justify-between items-center w-full p-[2px] rounded-lg shadow-lg ${isDark ? 'bg-gradient-to-r from-[#00FFDF] via-[#0065AD] to-white' : 'bg-gray-300 border border-gray-400'}`}>
-                    <button onClick={handlePrev} className={`px-4 py-2 rounded-l w-16 font-bold font-jannah text-xl flex items-center justify-center transition-colors ${isDark ? 'bg-black text-white hover:bg-gray-800' : 'bg-gray-200 text-black hover:bg-gray-300'}`}>
-                        &lt;
-                    </button>
-                    <div className={`flex-1 px-2 font-jannah font-bold h-full flex flex-col items-center justify-center text-center min-h-[50px] ${isDark ? 'bg-white/95 text-black' : 'bg-white text-black'}`}>
-                        <span className="text-sm md:text-base">{monthNameNative}</span>
-                        <span className="text-xs text-gray-600">{monthNameGregorian}</span>
+            <div ref={subPageRef} className={`flex flex-col gap-4 w-full ${isHorizontal ? 'max-w-[95vw]' : 'max-w-4xl'} bg-transparent transition-all duration-500`}>
+                <div ref={printRef} className="flex flex-col gap-4 p-2 bg-transparent">
+                    <div className={`text-center p-2 rounded bg-black/40 backdrop-blur-sm shadow-lg w-full ${isDark ? 'border border-cyan-500/30' : 'border border-gray-400 bg-white/80'}`}>
+                            <h2 className={`font-jannah text-[12px] font-bold mb-0.5 ${isDark ? 'text-white' : 'text-black'}`}>Today</h2>
+                            <h3 className={`font-jannah text-[12px] ${isDark ? 'text-white' : 'text-gray-900'}`}>{todayGregorian}</h3>
+                            <h3 className={`font-jannah text-[14px] ${isDark ? 'text-[#00FFDF]' : 'text-blue-700 font-bold'}`}>{todayNative}</h3>
                     </div>
-                    <button onClick={handleNext} className={`px-4 py-2 rounded-r w-16 font-bold font-jannah text-xl flex items-center justify-center transition-colors ${isDark ? 'bg-black text-white hover:bg-gray-800' : 'bg-gray-200 text-black hover:bg-gray-300'}`}>
-                        &gt;
-                    </button>
-                </div>
-                
-                {/* Horizontal Layout Structure - Proportional Sizing */}
-                <div className={`flex gap-6 w-full items-start transition-all duration-300 ${isHorizontal ? 'flex-col lg:flex-row' : 'flex-col'}`}>
-                    {/* Media Frame */}
-                    <div className={`relative group transition-all duration-300 ${isHorizontal ? 'w-full lg:w-1/2 min-h-[300px]' : 'w-full aspect-[16/9]'}`}>
-                        <div className={`relative w-full h-full flex items-center justify-center p-2 border-[5px] rounded-lg frame-blink ${isDark ? 'border-cyan-500 shadow-[0_0_15px_#06b6d4]' : 'border-[#00594C]'}`}>
-                             <div className={`relative z-10 w-full h-full overflow-hidden rounded flex items-center justify-center ${currentMedia ? '' : 'bg-black/20'}`}>
-                                {currentMedia ? (
-                                    currentMedia.type === 'video' ? 
-                                        <video src={currentMedia.url} className="w-full h-full object-contain" controls autoPlay loop muted /> :
-                                        <img src={currentMedia.url} className="w-full h-full object-contain" alt="Frame Content" />
-                                ) : (
-                                    <div className="text-center opacity-50 flex flex-col items-center p-4">
-                                        <p className={isDark ? 'text-white' : 'text-black font-bold'}>Upload Image/Video or Use AI Template</p>
-                                        <div className="text-4xl mt-2">🖼️</div>
+
+                    {/* Navigation Bar */}
+                    <div className={`flex justify-between items-center w-full p-[2px] rounded-lg shadow-lg ${isDark ? 'bg-gradient-to-r from-[#00FFDF] via-[#0065AD] to-white' : 'bg-gray-300 border border-gray-400'}`}>
+                        <button onClick={handlePrev} className={`px-4 py-2 rounded-l w-16 font-bold font-jannah text-xl flex items-center justify-center transition-colors ${isDark ? 'bg-black text-white hover:bg-gray-800' : 'bg-gray-200 text-black hover:bg-gray-300'}`}>
+                            &lt;
+                        </button>
+                        <div className={`flex-1 px-2 font-jannah font-bold h-full flex flex-col items-center justify-center text-center min-h-[50px] ${isDark ? 'bg-white/95 text-black' : 'bg-white text-black'}`}>
+                            <span className="text-sm md:text-base">{monthNameNative}</span>
+                            <span className="text-xs text-gray-600">{monthNameGregorian}</span>
+                        </div>
+                        <button onClick={handleNext} className={`px-4 py-2 rounded-r w-16 font-bold font-jannah text-xl flex items-center justify-center transition-colors ${isDark ? 'bg-black text-white hover:bg-gray-800' : 'bg-gray-200 text-black hover:bg-gray-300'}`}>
+                            &gt;
+                        </button>
+                    </div>
+                    
+                    <div className={`w-full transition-all duration-300 ${isHorizontal ? 'grid grid-cols-1 md:grid-cols-2 gap-4 items-start' : 'flex flex-col gap-6'}`}>
+                        
+                        {/* LEFT COLUMN: Media Frame + Controls */}
+                        <div className={`flex flex-col gap-2 ${isHorizontal ? 'h-full' : 'w-full'}`}>
+                            <div className={`relative group transition-all duration-300 ${isHorizontal ? 'w-full h-full min-h-[300px]' : 'w-full aspect-[16/9]'}`}>
+                                <div className={`relative w-full h-full flex items-center justify-center p-2 border-[5px] rounded-lg frame-blink ${isDark ? 'border-cyan-500 shadow-[0_0_15px_#06b6d4]' : 'border-[#00594C]'}`}>
+                                    <div className={`relative z-10 w-full h-full overflow-hidden rounded flex items-center justify-center ${currentMedia ? '' : 'bg-black/20'}`}>
+                                        {currentMedia ? (
+                                            currentMedia.type === 'video' ? 
+                                                <video src={currentMedia.url} className="w-full h-full object-contain" controls autoPlay loop muted /> :
+                                                <img src={currentMedia.url} className="w-full h-full object-contain" alt="Frame Content" />
+                                        ) : (
+                                            <div className="text-center opacity-50 flex flex-col items-center p-4">
+                                                <p className={`text-sm ${isDark ? 'text-white' : 'text-black font-bold'}`}>Upload Image/Video or Use AI Template</p>
+                                                <div className="text-4xl mt-2">🖼️</div>
+                                            </div>
+                                        )}
+                                        {mediaList.length > 1 && (
+                                            <>
+                                                <button onClick={() => setCurrentMediaIndex(prev => Math.max(0, prev - 1))} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/80">‹</button>
+                                                <button onClick={() => setCurrentMediaIndex(prev => Math.min(mediaList.length - 1, prev + 1))} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/80">›</button>
+                                                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                                                    {mediaList.map((_, idx) => (<div key={idx} className={`w-2 h-2 rounded-full ${idx === currentMediaIndex ? 'bg-cyan-400' : 'bg-gray-500'}`}></div>))}
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
-                                )}
-                                {mediaList.length > 1 && (
-                                    <>
-                                        <button onClick={() => setCurrentMediaIndex(prev => Math.max(0, prev - 1))} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/80">‹</button>
-                                        <button onClick={() => setCurrentMediaIndex(prev => Math.min(mediaList.length - 1, prev + 1))} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/80">›</button>
-                                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-                                            {mediaList.map((_, idx) => (<div key={idx} className={`w-2 h-2 rounded-full ${idx === currentMediaIndex ? 'bg-cyan-400' : 'bg-gray-500'}`}></div>))}
-                                        </div>
-                                    </>
-                                )}
+                                </div>
+                            </div>
+
+                            {/* Controls */}
+                            <div className="flex flex-wrap justify-center gap-2 py-2 no-print" data-html2canvas-ignore="true">
+                                <label className="cursor-pointer bg-blue-700 hover:bg-blue-600 text-white px-3 py-1.5 rounded text-[10px] font-bold shadow-lg flex items-center gap-1 hover:scale-105 transition-transform cyber-button text-white" title="Upload Image/Video">
+                                    <span>⬆️</span> UPLOAD
+                                    <input type="file" className="hidden" accept="image/*,video/*" onChange={handleFileUpload} />
+                                </label>
+                                <button onClick={() => setShowAiBuilder(true)} className="bg-purple-700 hover:bg-purple-600 text-white px-3 py-1.5 rounded text-[10px] font-bold shadow-lg flex items-center gap-1 hover:scale-105 transition-transform" title="Generate Prompt"><span>🎨</span> AI Builder</button>
+                                <div className="relative group">
+                                    <button className="bg-green-700 hover:bg-green-600 text-white px-3 py-1.5 rounded text-[10px] font-bold shadow-lg flex items-center gap-1">💾 Save</button>
+                                    <div className="absolute bottom-full left-0 mb-1 w-24 bg-gray-800 rounded shadow-xl hidden group-hover:block z-20">
+                                        <button onClick={() => handleSaveFile('jpg')} className={`block w-full text-left px-4 py-2 text-[10px] hover:bg-gray-700 ${isDark ? 'text-white' : 'text-white'}`}>JPG</button>
+                                        <button onClick={() => handleSaveFile('png')} className={`block w-full text-left px-4 py-2 text-[10px] hover:bg-gray-700 ${isDark ? 'text-white' : 'text-white'}`}>PNG</button>
+                                        <button onClick={() => handleSaveFile('pdf')} className={`block w-full text-left px-4 py-2 text-[10px] hover:bg-gray-700 ${isDark ? 'text-white' : 'text-white'}`}>PDF</button>
+                                        <button onClick={() => handleSaveFile('mpeg')} className={`block w-full text-left px-4 py-2 text-[10px] hover:bg-gray-700 ${isDark ? 'text-white' : 'text-white'}`}>MPEG (Video)</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    {/* Calendar Content */}
-                    <div className={`flex flex-col ${isHorizontal ? 'w-full lg:w-1/2' : 'w-full'} min-h-[300px]`}>
-                        <div className="flex-1 w-full">
-                            <CalendarView 
-                                date={date} setDate={setDate} type={selectedCalendar} days={days} 
-                                onDayClick={(day: any) => setSelectedTaskDate(`${day.year}-${String(day.month + 1).padStart(2, '0')}-${String(day.day).padStart(2, '0')}`)} 
-                                isDark={isDark} viewFormat={format} period={period} contentMode={contentMode}
-                                onAddEventClick={(day: any) => { setIsEventModalOpen(true); }}
-                                apiHolidays={apiHolidays}
-                            />
+
+                        {/* RIGHT COLUMN: Calendar Content */}
+                        <div className={`flex flex-col ${isHorizontal ? 'h-full' : 'w-full min-h-[300px]'}`}>
+                            <div className="flex-1 w-full h-full">
+                                <CalendarView 
+                                    date={date} setDate={setDate} type={selectedCalendar} days={days} 
+                                    onDayClick={(day: any) => setSelectedTaskDate(`${day.year}-${String(day.month + 1).padStart(2, '0')}-${String(day.day).padStart(2, '0')}`)} 
+                                    isDark={isDark} viewFormat={format} period={period} contentMode={contentMode}
+                                    onAddEventClick={(day: any) => { setIsEventModalOpen(true); }}
+                                    apiHolidays={apiHolidays}
+                                />
+                            </div>
+                            {/* Holiday List moved here for Horizontal View and Vertical View */}
+                             <HolidayBlock />
                         </div>
                     </div>
                 </div>
 
-                {/* Moved Control Menu to Bottom */}
+                {/* Control Menu */}
                 <div className={`grid grid-cols-2 md:grid-cols-3 gap-4 p-4 rounded w-full transition-all ${isDark ? 'glass-panel' : 'bg-white border border-gray-300'}`}>
                     <div>
                         <label className={`text-[10px] block mb-1 font-bold ${isDark ? 'text-cyan-400' : 'text-black'}`}>Format & Period</label>
@@ -1049,31 +1109,6 @@ function App() {
                              <option value={CalendarContentMode.NATIVE_ONLY}>{selectedCalendar} Only</option>
                          </select>
                     </div>
-                </div>
-
-                <div className={`w-full border p-2 rounded ${isDark ? 'bg-black/30 border-gray-700' : 'bg-white border-gray-300'}`}>
-                    <h4 className={`font-bold text-sm mb-1 ${isDark ? 'text-cyan-400' : 'text-black'}`}>Holiday Information ({country})</h4>
-                    <div className={`text-xs max-h-20 overflow-y-auto ${isDark ? 'text-white' : 'text-black'}`}>
-                        {holidaysThisMonth.length > 0 ? (
-                            holidaysThisMonth.map((h, i) => (<p key={i}><span className="text-red-500 font-bold">{h.date}:</span> {h.localName || h.name}</p>))
-                        ) : <p className="opacity-50">No holidays this month.</p>}
-                    </div>
-                </div>
-
-                <div className="flex flex-wrap justify-center gap-4 py-4 no-print">
-                        <label className="cursor-pointer bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold shadow-lg flex items-center gap-2 hover:scale-105 transition-transform cyber-button text-white" title="Upload Image/Video">
-                            <span>⬆️</span> UPLOAD
-                            <input type="file" className="hidden" accept="image/*,video/*" onChange={handleFileUpload} />
-                        </label>
-                        <button onClick={() => setShowAiBuilder(true)} className="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded text-xs font-bold shadow-lg flex items-center gap-2 hover:scale-105 transition-transform" title="Generate Prompt"><span>🎨</span> Template prompt</button>
-                        <div className="relative group">
-                            <button className="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded text-xs font-bold shadow-lg flex items-center gap-2">💾 Save As ▼</button>
-                            <div className="absolute top-full left-0 mt-1 w-32 bg-gray-800 rounded shadow-xl hidden group-hover:block z-10">
-                                <button className="block w-full text-left px-4 py-2 text-xs hover:bg-gray-700">JPG</button>
-                                <button className="block w-full text-left px-4 py-2 text-xs hover:bg-gray-700">PNG</button>
-                                <button className="block w-full text-left px-4 py-2 text-xs hover:bg-gray-700">PDF</button>
-                            </div>
-                        </div>
                 </div>
             </div>
         );
@@ -1181,10 +1216,16 @@ function App() {
                 )}
             </main>
             <footer className="w-full py-6 mt-8 border-t border-gray-700 flex flex-col items-center justify-center gap-2 bg-[#0f172a] text-white no-print relative z-10">
-                <a href="https://ko-fi.com/syukran/tip" target="_blank" rel="noreferrer" className="bg-[#FF5E5B] hover:bg-[#ff4542] text-white font-jannah text-[12px] px-4 py-2 rounded-full shadow-lg flex items-center gap-2 transition-transform hover:scale-105">☕ Support Us (Buy me Ko-fi)</a>
-                <div className="text-center relative">
+                <a href="https://sociabuzz.com/syukrankatsiron/tribe" target="_blank" rel="noreferrer" className="bg-[#FF5E5B] hover:bg-[#ff4542] text-white font-jannah text-[12px] px-4 py-2 rounded-full shadow-lg flex items-center gap-2 transition-transform hover:scale-105">Support us</a>
+                <div className="flex flex-col items-center gap-1">
+                     <a href="mailto:hijr.time@gmail.com" className="text-white hover:text-cyan-400 font-bold text-sm flex items-center gap-1"><span>✉️</span> Hubungi kami</a>
+                     <a href="https://ko-fi.com/syukran/tip" target="_blank" rel="noreferrer">
+                        <img src={ASSETS.BTN_KOFI} alt="Buy me a Ko-fi" className="h-8 hover:scale-105 transition-transform" />
+                     </a>
+                </div>
+                <div className="text-center relative mt-2">
                      <p className="font-jannah text-[12px] text-gray-400 italic opacity-50">by Te_eR Inovative</p>
-                     <p className="font-jannah text-[9px] text-white">{new Date().getFullYear()}</p>
+                     <p className="font-jannah text-[9px] text-white">© {new Date().getFullYear()}</p>
                 </div>
             </footer>
         </div>
