@@ -1,7 +1,0 @@
-{
-  "name": "DIGICALD: Digital Calendar Universe",
-  "description": "A comprehensive multi-calendar application featuring Gregorian, Hijri, Javanese, Chinese, and more with real-time conversion, Cyberpunk aesthetics, and GenAI image generation capabilities.",
-  "requestFramePermissions": [
-    "geolocation"
-  ]
-}
