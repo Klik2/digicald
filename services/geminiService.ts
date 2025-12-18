@@ -1,3 +1,4 @@
+
 import { GoogleGenAI } from "@google/genai";
 
 export const generateCalendarImage = async (prompt: string, aspectRatio: string = '16:9', imageSize: string = '1K'): Promise<string | null> => {
@@ -36,9 +37,8 @@ export const generateCalendarImage = async (prompt: string, aspectRatio: string 
 export const getCalendarQuote = async (): Promise<string> => {
     try {
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        // Fix: Use gemini-3-flash-preview for text tasks as per guidelines
         const response = await ai.models.generateContent({
-            model: 'gemini-3-flash-preview',
+            model: 'gemini-2.5-flash',
             contents: "Give me a short, inspiring cyberpunk-style quote about time and the future. Max 15 words. Do not include quotes in the output string.",
         });
         return response.text || "Time flows like neon rain.";
