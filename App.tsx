@@ -1,20 +1,10 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { CalendarType, CalendarViewFormat, CalendarPeriod, CalendarContentMode, AiOptionsData, AppSettings, LANGUAGES, COUNTRIES, CustomEvent, Task, AI_GENERATORS, MediaItem } from './types';
 import { getMonthData, getFormattedDateString, fetchHolidays, getNativeDateDigit, exportToICS } from './utils/calendarLogic';
 import { generateCalendarImage } from './services/geminiService';
-
-// Fix: Add global interface for window properties
-declare global {
-  interface Window {
-    deferredPrompt: any;
-    aistudio: {
-      hasSelectedApiKey: () => Promise<boolean>;
-      openSelectKey: () => Promise<void>;
-    };
-  }
-}
 
 // --- Text Content Constants ---
 const guideContent = `
@@ -79,80 +69,14 @@ const ASSETS = {
     BTN_KOFI: "https://github.com/vandratop/Yuk/blob/872daa6f963613ba58fc4ff71f886beed94ff15d/support_me_on_kofi_beige.png?raw=true"
 };
 
-// --- Missing Components Implementation ---
-
-// Fix: Added ImageResultModal
-const ImageResultModal = ({ isOpen, onClose, imageSrc, onSave }: any) => {
-    if (!isOpen || !imageSrc) return null;
-    return (
-        <div className="fixed inset-0 z-[400] bg-black/90 flex items-center justify-center p-4">
-            <div className="bg-[#0f172a] border border-cyan-500 p-4 rounded-xl max-w-2xl w-full flex flex-col items-center neon-border">
-                <img src={imageSrc} alt="Generated" className="max-w-full max-h-[60vh] rounded mb-4" />
-                <div className="flex gap-4">
-                    <button onClick={onClose} className="px-6 py-2 bg-gray-700 text-white rounded font-bold">CANCEL</button>
-                    <button onClick={onSave} className="px-6 py-2 bg-cyan-600 text-white rounded font-bold shadow-[0_0_15px_#06b6d4]">UPLINK IMAGE</button>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-// Fix: Added TextModal
-const TextModal = ({ isOpen, onClose, title, content }: any) => {
-    if (!isOpen) return null;
-    return (
-        <div className="fixed inset-0 z-[400] bg-black/80 flex items-center justify-center p-4">
-            <div className="bg-[#0f172a] border border-cyan-500 p-6 rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto text-white neon-border">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-fredoka text-cyan-400">{title}</h3>
-                    <button onClick={onClose} className="text-red-500 font-bold">[X]</button>
-                </div>
-                <div className="prose prose-invert max-w-none text-sm whitespace-pre-wrap">
-                    {content}
-                </div>
-            </div>
-        </div>
-    );
-};
-
-// Fix: Added FindUsModal
-const FindUsModal = ({ isOpen, onClose }: any) => {
-    if (!isOpen) return null;
-    return (
-        <div className="fixed inset-0 z-[400] bg-black/80 flex items-center justify-center p-4">
-            <div className="bg-[#0f172a] border border-cyan-500 p-6 rounded-xl max-w-md w-full text-white neon-border text-center">
-                <h3 className="text-xl font-fredoka text-cyan-400 mb-4">FIND US IN THE NET</h3>
-                <div className="flex flex-col gap-3">
-                    <a href="https://github.com/vandratop" target="_blank" rel="noreferrer" className="p-3 bg-gray-800 rounded hover:bg-cyan-900/50 transition-colors text-white no-underline">GitHub Repository</a>
-                    <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" className="p-3 bg-gray-800 rounded hover:bg-cyan-900/50 transition-colors text-white no-underline">Instagram Signal</a>
-                    <a href="https://twitter.com/" target="_blank" rel="noreferrer" className="p-3 bg-gray-800 rounded hover:bg-cyan-900/50 transition-colors text-white no-underline">X / Twitter Stream</a>
-                </div>
-                <button onClick={onClose} className="mt-6 text-gray-500 hover:text-white">Close Connection</button>
-            </div>
-        </div>
-    );
-};
-
-// Fix: Added PrintPreviewModal
-const PrintPreviewModal = ({ isOpen, onClose, previewType }: any) => {
-    if (!isOpen) return null;
-    return (
-        <div className="fixed inset-0 z-[500] bg-black/95 flex flex-col items-center justify-center p-4">
-            <div className="bg-white text-black p-8 rounded shadow-2xl max-w-4xl w-full overflow-y-auto mb-4">
-                <h2 className="text-center font-bold text-2xl mb-4 border-b pb-2 uppercase">{previewType?.replace('-', ' ')} PREVIEW</h2>
-                <div className="p-4 border-2 border-dashed border-gray-300 text-center text-gray-400 italic">
-                    [ Digital Calendar System Data Stream Rendering... ]
-                    <br />
-                    This represents the printed layout for: {previewType}
-                </div>
-            </div>
-            <div className="flex gap-4">
-                <button onClick={onClose} className="px-8 py-2 bg-red-600 text-white font-bold rounded">CANCEL</button>
-                <button onClick={() => { window.print(); onClose(); }} className="px-8 py-2 bg-blue-600 text-white font-bold rounded">CONFIRM PRINT</button>
-            </div>
-        </div>
-    );
-};
+// --- Types for Global Window ---
+declare global {
+  interface Window {
+    google?: any;
+    googleTranslateElementInit?: any;
+    deferredPrompt?: any;
+  }
+}
 
 // --- Starfield Component ---
 const Starfield = () => {
@@ -193,7 +117,7 @@ const TutorialOverlay = ({ isOpen, onClose }: any) => {
 
     const steps = [
         { id: 'app-title', text: "Welcome to DIGICALD 2.0! \nYour ultimate Cyberpunk Digital Calendar Universe." },
-        { id: 'menu-btn', text: "Access system information and contact signal here." },
+        { id: 'menu-btn', text: "Access different calendars (Hijri, Javanese, etc.) and information here." },
         { id: 'settings-btn', text: "Customize themes, zoom level, and language settings." },
         { id: 'install-btn', text: "Install DIGICALD as a PWA for offline access." },
         { id: 'ai-btn', text: "Create amazing visuals using our AI Template Builder." },
@@ -263,17 +187,18 @@ const Background = ({ isDark, themeName, showStars }: { isDark: boolean, themeNa
     );
   }
 
+  // Updated Background Images with 50% opacity in style
   let bgImage = "https://picsum.photos/id/903/1920/1080";
   switch(themeName) {
-      case CalendarType.HIJRI: bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_hijri.png?raw=true"; break;
-      case CalendarType.JAVANESE: bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_javanese.png?raw=true"; break;
-      case CalendarType.CHINESE: bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_chinese.png?raw=true"; break;
-      case CalendarType.BAZI: bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_bazi.png?raw=true"; break;
-      case CalendarType.JAPANESE: bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_japan.png?raw=true"; break;
-      case CalendarType.KOREAN: bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_korean.png?raw=true"; break;
-      case CalendarType.THAI: bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_thai.png?raw=true"; break;
-      case CalendarType.IRANIAN: bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_iranian.png?raw=true"; break;
-      case CalendarType.HINDI: bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_hindi.png?raw=true"; break;
+      case 'hijri': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_hijri.png?raw=true"; break;
+      case 'javanese': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_javanese.png?raw=true"; break;
+      case 'chinese': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_chinese.png?raw=true"; break;
+      case 'bazi': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_bazi.png?raw=true"; break;
+      case 'japan': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_japan.png?raw=true"; break;
+      case 'korean': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_korean.png?raw=true"; break;
+      case 'thai': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_thai.png?raw=true"; break;
+      case 'iranian': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_iranian.png?raw=true"; break;
+      case 'hindi': bgImage = "https://github.com/vandratop/Yuk/blob/1fa6d0cb2689688b21c0e288cf45ad92fd422286/DGCALD/DIGICALD_back_hindi.png?raw=true"; break;
       default: bgImage = "https://picsum.photos/id/903/1920/1080";
   }
 
@@ -288,41 +213,42 @@ const Background = ({ isDark, themeName, showStars }: { isDark: boolean, themeNa
 
 // --- Header ---
 const Header = ({ onToggleMenu, onToggleSettings, onToggleLanguage, subPageTitle, onBack, isDark, isMenuOpen, isLangMenuOpen, installPwa }: any) => (
-    <header className={`fixed top-0 left-0 right-0 z-50 border-b h-16 flex items-center justify-between px-2 md:px-6 transition-colors duration-300 no-print ${isDark ? 'glass-panel border-cyan-500/30' : 'bg-white border-gray-200 shadow-sm'}`}>
-        <div className="flex items-center gap-1 md:gap-3 relative z-20">
+    <header className={`fixed top-0 left-0 right-0 z-50 border-b h-16 flex items-center justify-between px-2 md:px-4 transition-colors duration-300 no-print ${isDark ? 'glass-panel border-cyan-500/30' : 'bg-white/90 border-gray-200 shadow-sm'}`}>
+        <div className="flex items-center gap-2 md:gap-4 relative z-20 flex-shrink-0">
             {subPageTitle && (
                 <button onClick={onBack} className="text-xl md:text-2xl hover:scale-110 transition-transform" title="Back">🔙</button>
             )}
-            <button id="menu-btn" onClick={onToggleMenu} className={`p-1.5 md:p-2 transition-colors ${isDark ? 'text-cyan-400 hover:text-white' : 'text-gray-700 hover:text-black'} ${isMenuOpen ? 'bg-white/10 rounded-full' : ''}`} title="Menu">
+            <button id="menu-btn" onClick={onToggleMenu} className={`p-1.5 transition-colors ${isDark ? 'text-cyan-400 hover:text-white' : 'text-gray-700 hover:text-black'} ${isMenuOpen ? 'bg-white/10 rounded-full' : ''}`} title="Menu">
                 <svg className="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
-            <button id="install-btn" onClick={installPwa} className="text-xl md:text-2xl hover:scale-110 transition-transform p-1 animate-pulse" title="Install App">
+            <button id="install-btn" onClick={installPwa} className="text-xl hover:scale-110 transition-transform p-1 animate-pulse" title="Install App">
                 📥
             </button>
         </div>
         
-        <div className="flex flex-col items-center justify-center absolute left-0 right-0 pointer-events-none z-10">
+        <div className="flex flex-col items-center justify-center absolute left-0 right-0 pointer-events-none z-10 px-14">
             {subPageTitle ? (
-                    <h1 className={`text-sm md:text-2xl font-fredoka font-bold tracking-wider ${isDark ? 'text-white' : 'text-gray-800'}`} data-text={subPageTitle}>{subPageTitle}</h1>
+                    <h1 className={`text-sm md:text-2xl font-fredoka font-bold tracking-wider truncate max-w-full ${isDark ? 'text-white' : 'text-gray-800'}`} data-text={subPageTitle}>{subPageTitle}</h1>
             ) : (
-                <h1 id="app-title" className="text-xl md:text-3xl font-fredoka text-[#00594C] font-bold" data-text="DIGICALD">DIGICALD</h1>
+                <h1 id="app-title" className="text-xl md:text-3xl font-fredoka text-[#00594C] font-bold truncate max-w-full" data-text="DIGICALD">DIGICALD</h1>
             )}
         </div>
 
-        <div className="flex items-center gap-1 md:gap-3 relative z-20">
-            <button onClick={onToggleLanguage} className={`text-xl md:text-2xl hover:scale-110 transition-transform p-1 rounded ${isLangMenuOpen ? 'bg-white/10' : ''}`} title="Translate / Language">🇬🇧</button>
-            <button id="settings-btn" onClick={onToggleSettings} className="p-1.5 md:p-2 transition-colors" title="Settings">
+        <div className="flex items-center gap-2 relative z-20 flex-shrink-0">
+            <button onClick={onToggleLanguage} className={`text-xl hover:scale-110 transition-transform p-1 rounded ${isLangMenuOpen ? 'bg-white/10' : ''}`} title="Translate / Language">🇬🇧</button>
+            <button id="settings-btn" onClick={onToggleSettings} className="p-1.5 transition-colors" title="Settings">
                 <img src={ASSETS.ICON_SETTINGS} alt="Settings" className="w-6 h-6 md:w-8 md:h-8 animate-spin-slow" />
             </button>
         </div>
     </header>
 );
 
+// --- Menus ---
 const MainMenu = ({ isOpen, onClose, onShowGuide, onShowTerms, onShowFAQ, onShowFindUs }: any) => {
     if (!isOpen) return null;
     return (
         <div className="absolute top-16 left-4 z-[250] bg-[#0f172a] border border-cyan-500 rounded-lg p-2 w-56 shadow-xl neon-border animate-fade-in">
-            <div className="mb-1 pb-1">
+            <div className="mb-2 pb-2">
                 <button onClick={() => { onShowGuide(); onClose(); }} className="w-full text-left p-2 text-white hover:bg-cyan-900/50 hover:text-cyan-400 text-sm rounded">📖 User Guide</button>
                 <button onClick={() => { onShowTerms(); onClose(); }} className="w-full text-left p-2 text-white hover:bg-cyan-900/50 hover:text-cyan-400 text-sm rounded">📜 Terms & Policy</button>
                 <button onClick={() => { onShowFAQ(); onClose(); }} className="w-full text-left p-2 text-white hover:bg-cyan-900/50 hover:text-cyan-400 text-sm rounded">❓ FAQ</button>
@@ -339,10 +265,11 @@ const SettingsMenu = ({ isOpen, onClose, settings, onUpdate, onLogout, onPrintPr
     return (
         <div className="fixed top-16 right-4 z-[250] bg-[#0f172a] border border-cyan-500 rounded-lg p-4 w-72 shadow-xl text-white neon-border no-print animate-fade-in max-h-[80vh] overflow-y-auto">
              <div className="flex justify-between items-center mb-3 border-b border-gray-700 pb-2">
-                 <h3 className="text-cyan-400 font-bold font-fredoka uppercase tracking-wider">System Config</h3>
+                 <h3 className="text-cyan-400 font-bold font-fredoka">SYSTEM CONFIG</h3>
                  <button onClick={onClose} className="text-red-500 font-bold text-lg hover:text-red-400" title="Close">[X]</button>
              </div>
              
+             {/* Zoom Controls */}
              <div className="mb-4 bg-gray-800 p-2 rounded border border-gray-700">
                  <label className="text-xs text-gray-400 font-bold block mb-1">ZOOM LEVEL</label>
                  <div className="flex justify-between items-center">
@@ -433,6 +360,7 @@ const LanguageMenu = ({ isOpen, onClose, currentLang, onLangChange }: any) => {
     );
 };
 
+// ... (AiTemplateBuilder, ImageResultModal, TextModal, ContactModal, FindUsModal, PrintPreviewModal, TaskModal, EventModal remain same, shortened for brevity)
 const AiTemplateBuilder = ({ isOpen, onClose, onImageGenerated, isDark }: any) => {
     const [activeTab, setActiveTab] = useState('Ratio');
     const [selections, setSelections] = useState({
@@ -459,32 +387,39 @@ const AiTemplateBuilder = ({ isOpen, onClose, onImageGenerated, isDark }: any) =
     };
 
     const tabs = ['Ratio', 'Background', 'Camera', 'Style', 'Light', 'Weather', 'Time'];
-    const cardClass = isDark ? "bg-[#0f172a] border-cyan-500 text-white" : "bg-white border-gray-400 text-black shadow-2xl";
-    const tabClass = (t: string) => activeTab === t 
-        ? "bg-cyan-600 text-white shadow-lg" 
-        : (isDark ? "bg-gray-800 text-gray-400 hover:bg-gray-700" : "bg-gray-200 text-gray-700 hover:bg-gray-300 border border-gray-300");
+    
+    // High contrast for light mode
+    const titleColor = !isDark ? 'text-gray-900' : 'text-cyan-400';
+    const textColor = !isDark ? 'text-gray-800' : 'text-gray-400';
+    const cardBg = !isDark ? 'bg-white border-gray-400' : 'bg-[#0f172a] border-cyan-500';
 
     return (
         <div className="fixed inset-0 z-[300] bg-black/90 flex items-center justify-center p-4">
-             <div className={`${cardClass} border rounded-lg p-4 w-[90%] max-w-4xl shadow-2xl neon-border flex flex-col max-h-[90vh] overflow-hidden relative`}>
+             <div className={`${cardBg} border rounded-lg p-4 w-[80%] max-w-4xl shadow-2xl neon-border flex flex-col max-h-[90vh] overflow-hidden relative`}>
                  <div className="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
-                     <h3 className={`text-xl font-fredoka font-bold ${isDark ? 'text-cyan-400' : 'text-blue-900'}`}>AI TEMPLATE BUILDER</h3>
+                     <h3 className={`text-xl font-fredoka ${titleColor}`}>AI TEMPLATE BUILDER</h3>
                      <button onClick={onClose} className="text-red-500 font-bold hover:text-red-400 text-xl">[X]</button>
                  </div>
                  
+                 {/* Tabs */}
                  <div className="flex flex-wrap gap-2 mb-4 border-b border-gray-700 pb-2">
                     {tabs.map(t => (
-                        <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-1.5 rounded text-xs font-bold transition-all ${tabClass(t)}`}>
+                        <button 
+                            key={t} 
+                            onClick={() => setActiveTab(t)}
+                            className={`px-4 py-1 rounded text-sm font-bold transition-colors ${activeTab === t ? 'bg-cyan-600 text-white' : (!isDark ? 'bg-gray-200 text-gray-700' : 'bg-gray-800 text-gray-400 hover:bg-gray-700')}`}
+                        >
                             {t}
                         </button>
                     ))}
                  </div>
 
-                 <div className={`flex-1 overflow-y-auto mb-4 p-2 rounded ${isDark ? 'bg-black/20' : 'bg-gray-100 border border-gray-300'}`}>
+                 {/* Tab Content */}
+                 <div className={`flex-1 overflow-y-auto mb-4 p-2 rounded ${!isDark ? 'bg-gray-100' : 'bg-black/20'}`}>
                     {['Style', 'Light', 'Weather', 'Time', 'Ratio', 'Background', 'Camera'].includes(activeTab) && (
                         <div className="flex flex-wrap gap-2 justify-center">
                             {(activeTab === 'Ratio' ? AiOptionsData.ratio : activeTab === 'Background' ? AiOptionsData.background : activeTab === 'Camera' ? AiOptionsData.camera : AiOptionsData[activeTab.toLowerCase() as keyof typeof AiOptionsData])?.map(opt => (
-                                <button key={opt} onClick={() => updateSelection(activeTab.toLowerCase(), opt)} className={`px-3 py-1.5 rounded border text-xs capitalize transition-colors ${selections[activeTab.toLowerCase() as keyof typeof selections] === opt ? 'bg-cyan-600 border-cyan-400 text-white' : (isDark ? 'bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800' : 'bg-white border-gray-400 text-black hover:bg-gray-200')}`}>
+                                <button key={opt} onClick={() => updateSelection(activeTab.toLowerCase(), opt)} className={`px-3 py-1 rounded border text-sm capitalize hover:bg-opacity-80 ${selections[activeTab.toLowerCase() as keyof typeof selections] === opt ? 'bg-cyan-600 border-cyan-400 text-white' : (!isDark ? 'bg-white border-gray-400 text-black' : 'bg-transparent border-gray-600 text-gray-300')}`}>
                                     {opt}
                                 </button>
                             ))}
@@ -492,24 +427,26 @@ const AiTemplateBuilder = ({ isOpen, onClose, onImageGenerated, isDark }: any) =
                     )}
                  </div>
 
-                 <div className={`${isDark ? 'bg-black' : 'bg-gray-200'} p-3 rounded border border-gray-400 mb-4`}>
-                    <label className={`text-[10px] uppercase font-bold block mb-1 ${isDark ? 'text-gray-500' : 'text-gray-700'}`}>Generated Prompt:</label>
+                 {/* Prompt Display */}
+                 <div className={`${!isDark ? 'bg-gray-200 border-gray-400 text-black' : 'bg-black border-gray-700 text-cyan-300'} p-3 rounded border mb-4`}>
+                    <label className={`text-[10px] block mb-1 ${!isDark ? 'text-gray-600' : 'text-gray-500'}`}>GENERATED PROMPT:</label>
                     <textarea 
-                        className={`w-full h-16 bg-transparent text-sm resize-none focus:outline-none font-mono ${isDark ? 'text-cyan-300' : 'text-black font-bold'}`}
+                        className="w-full h-16 bg-transparent text-sm resize-none focus:outline-none font-mono"
                         value={promptText}
-                        readOnly
+                        onChange={e => setPromptText(e.target.value)}
                     />
                     <div className="flex justify-end">
-                        <button onClick={handleCopy} className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded">Copy Signal</button>
+                        <button onClick={handleCopy} className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded">Select All & Copy</button>
                     </div>
                  </div>
 
+                 {/* Generator Dropdown */}
                  <div className="flex flex-col items-center gap-2 border-t border-gray-700 pt-4">
-                     <div className="flex items-center gap-3">
-                        <span className={`text-sm font-bold ${isDark ? 'text-white' : 'text-black'}`}>Generator external with:</span>
+                     <div className="flex items-center gap-2">
+                        <span className={`text-sm font-bold ${!isDark ? 'text-black' : 'text-white'}`}>Generator external with:</span>
                         <select 
                             onChange={(e) => handleExternalGenerate(e.target.value)}
-                            className={`${isDark ? 'bg-gray-800 text-white border-gray-600' : 'bg-white text-black border-gray-400'} text-xs p-2 rounded border cursor-pointer hover:border-cyan-500`}
+                            className={`${!isDark ? 'bg-white text-black border-gray-400' : 'bg-gray-800 text-white border-gray-600'} text-sm p-2 rounded border cursor-pointer hover:border-cyan-500`}
                             defaultValue=""
                         >
                             <option value="" disabled>Select AI Tool...</option>
@@ -518,47 +455,129 @@ const AiTemplateBuilder = ({ isOpen, onClose, onImageGenerated, isDark }: any) =
                             ))}
                         </select>
                      </div>
-                     <p className={`text-[10px] italic ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Note : After your get image, back to "DIGICALD" menu and upload your image</p>
+                     <p className={`text-xs italic ${!isDark ? 'text-gray-600' : 'text-gray-400'}`}>Note : After your get image, back to "DIGICALD" menu and upload your image</p>
                  </div>
              </div>
         </div>
     );
 };
 
-const TaskModal = ({ isOpen, onClose, dateStr, tasks, onSaveTask, isDark }: any) => {
+const ImageResultModal = ({ isOpen, onClose, imageSrc, onSave }: any) => {
+    if (!isOpen || !imageSrc) return null;
+    return (
+        <div className="fixed inset-0 z-[300] bg-black/90 flex items-center justify-center p-4">
+            <div className="bg-[#0f172a] border border-cyan-500 rounded-lg p-4 max-w-3xl w-full shadow-2xl neon-border flex flex-col">
+                <div className="relative aspect-video w-full bg-black rounded overflow-hidden mb-4 border border-gray-700">
+                    <img src={imageSrc} alt="Generated" className="w-full h-full object-contain" />
+                </div>
+                <div className="flex justify-between items-center">
+                    <button onClick={onClose} className="text-gray-400 hover:text-white text-sm">DISCARD</button>
+                    <button onClick={onSave} className="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded font-bold shadow-[0_0_10px_#22c55e]">USE THIS VISUAL</button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const TextModal = ({ isOpen, onClose, title, content }: any) => {
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 z-[300] bg-black/80 flex items-center justify-center p-4">
+            <div className="bg-[#0f172a] border border-cyan-500 rounded-lg p-6 max-w-lg w-full shadow-2xl neon-border animate-fade-in relative">
+                 <button onClick={onClose} className="absolute top-2 right-2 text-red-500 font-bold hover:text-red-400">[X]</button>
+                 <h2 className="text-xl font-fredoka text-cyan-400 mb-4">{title}</h2>
+                 <div className="text-gray-300 text-sm whitespace-pre-wrap max-h-[60vh] overflow-y-auto custom-scrollbar">
+                     {content}
+                 </div>
+            </div>
+        </div>
+    );
+};
+
+const ContactModal = ({ isOpen, onClose }: any) => {
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 z-[300] bg-black/80 flex items-center justify-center p-4">
+            <div className="bg-[#0f172a] border border-cyan-500 rounded-lg p-6 max-w-md w-full shadow-2xl neon-border text-center">
+                 <button onClick={onClose} className="absolute top-2 right-2 text-red-500 font-bold hover:text-red-400">[X]</button>
+                 <h2 className="text-xl font-fredoka text-cyan-400 mb-4">CONTACT SIGNAL</h2>
+                 <p className="text-gray-300 mb-4">For bugs, feedback, or feature requests:</p>
+                 <a href="mailto:support@digicald.com" className="text-cyan-300 hover:text-white underline">support@digicald.com</a>
+            </div>
+        </div>
+    );
+};
+
+const FindUsModal = ({ isOpen, onClose }: any) => {
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 z-[300] bg-black/80 flex items-center justify-center p-4">
+             <div className="bg-[#0f172a] border border-cyan-500 rounded-lg p-6 max-w-md w-full shadow-2xl neon-border text-center">
+                 <button onClick={onClose} className="absolute top-2 right-2 text-red-500 font-bold hover:text-red-400">[X]</button>
+                 <h2 className="text-xl font-fredoka text-cyan-400 mb-4">LOCATE US</h2>
+                 <p className="text-gray-300 text-sm">We are everywhere in the digital realm.</p>
+            </div>
+        </div>
+    );
+};
+
+const PrintPreviewModal = ({ isOpen, onClose, previewType }: any) => {
+    if (!isOpen) return null;
+    const handlePrint = () => { window.print(); };
+    return (
+        <div className="fixed inset-0 z-[300] bg-white flex flex-col">
+            <div className="bg-gray-800 text-white p-4 flex justify-between items-center no-print">
+                <h2 className="font-bold">PRINT PREVIEW: {previewType?.toUpperCase()}</h2>
+                <div className="flex gap-4">
+                    <button onClick={handlePrint} className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-500">PRINT</button>
+                    <button onClick={onClose} className="bg-red-600 px-4 py-2 rounded hover:bg-red-500">CLOSE</button>
+                </div>
+            </div>
+            <div className="flex-1 overflow-auto p-8 bg-gray-100 text-black">
+                <div className="max-w-4xl mx-auto bg-white shadow-lg p-8 min-h-[1000px]">
+                    <h1 className="text-3xl font-bold text-center mb-4">DIGICALD REPORT</h1>
+                    <p className="text-center text-gray-600 mb-8">{new Date().toLocaleDateString()}</p>
+                    <div className="border border-gray-300 p-4 rounded text-center">
+                         <p className="italic text-gray-500">Preview content for {previewType} would appear here formatted for A4/Letter.</p>
+                         <p className="mt-4">Please use the browser print dialog to save as PDF or print.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const TaskModal = ({ isOpen, onClose, dateStr, tasks, onSaveTask, monthDays, settings }: any) => {
     const [activeTab, setActiveTab] = useState<'daily' | 'monthly'>('daily');
     const [newTask, setNewTask] = useState('');
     const [newTime, setNewTime] = useState('');
-    const [newMonthDate, setNewMonthDate] = useState('1');
-    const [highlightColor, setHighlightColor] = useState('#06b6d4');
+    const [newDateForMonth, setNewDateForMonth] = useState(dateStr); // For monthly tab
+    const [highlightColor, setHighlightColor] = useState('#06b6d4'); // Default highlight color
     
     if (!isOpen || !dateStr) return null;
 
-    const dateParts = dateStr.split('-');
-    const currentYear = parseInt(dateParts[0]);
-    const currentMonth = parseInt(dateParts[1]);
-    const currentDate = new Date(currentYear, currentMonth - 1, parseInt(dateParts[2]));
+    const currentYear = parseInt(dateStr.split('-')[0]);
+    const currentMonth = parseInt(dateStr.split('-')[1]);
+    const currentDateObj = new Date(dateStr);
 
-    const dayTasks = tasks.filter((t: Task) => t.date === dateStr);
-    const monthTasks = tasks.filter((t: Task) => {
-        const tParts = t.date.split('-');
-        return parseInt(tParts[0]) === currentYear && parseInt(tParts[1]) === currentMonth;
+    const dayTasks = tasks.filter((t: any) => t.date === dateStr);
+    const monthTasks = tasks.filter((t: any) => {
+        const tDate = t.date.split('-');
+        return parseInt(tDate[0]) === currentYear && parseInt(tDate[1]) === currentMonth;
     });
 
     const displayTasks = activeTab === 'daily' ? dayTasks : monthTasks;
 
     const handleAdd = () => {
         if (!newTask) return;
-        const targetDate = activeTab === 'daily' 
-            ? dateStr 
-            : `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(newMonthDate).padStart(2, '0')}`;
-
+        const taskDate = activeTab === 'daily' ? dateStr : newDateForMonth;
         const task: Task = {
             id: Date.now().toString(),
-            date: targetDate,
-            timeSlot: activeTab === 'daily' ? newTime : undefined,
+            date: taskDate,
+            timeSlot: newTime,
             content: newTask,
             isCompleted: false,
+            // Assuming we might want to store highlight color in task or handle it separately
         };
         onSaveTask([...tasks, task]);
         setNewTask('');
@@ -566,84 +585,95 @@ const TaskModal = ({ isOpen, onClose, dateStr, tasks, onSaveTask, isDark }: any)
     };
 
     const toggleTask = (id: string) => {
-        onSaveTask(tasks.map((t: Task) => t.id === id ? { ...t, isCompleted: !t.isCompleted } : t));
+        const updated = tasks.map((t: any) => t.id === id ? { ...t, isCompleted: !t.isCompleted } : t);
+        onSaveTask(updated);
     };
 
     const deleteTask = (id: string) => {
-        onSaveTask(tasks.filter((t: Task) => t.id !== id));
+        const updated = tasks.filter((t: any) => t.id !== id);
+        onSaveTask(updated);
     };
 
     const handleShare = async () => {
-        const shareData = {
-            title: 'DIGICALD Task Log',
-            text: `Tasks for ${activeTab === 'daily' ? dateStr : currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}:\n` + 
-                  displayTasks.map((t: Task) => `- [${t.isCompleted ? 'X' : ' '}] ${t.timeSlot ? t.timeSlot + ': ' : ''}${t.content}`).join('\n'),
-            url: window.location.href
-        };
-        if (navigator.share) await navigator.share(shareData);
-        else alert("Sharing not supported in this browser.");
+        const title = activeTab === 'daily' ? `Tasks for ${dateStr}` : `Tasks for ${currentYear}-${currentMonth}`;
+        const text = displayTasks.map((t: any) => `- [${t.date}] ${t.timeSlot ? t.timeSlot + ': ' : ''}${t.content} ${t.isCompleted ? '(Done)' : ''}`).join('\n');
+        
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: 'DIGICALD Tasks', text: `${title}\n\n${text}` });
+            } catch (err) {
+                console.log('Share failed', err);
+            }
+        } else {
+            alert("Sharing not supported on this device/browser.");
+        }
     };
 
-    const dailyTitle = currentDate.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    const monthlyTitle = currentDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    // Header Date Formatting
+    const dailyHeader = currentDateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const monthlyHeader = currentDateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
 
     return (
-        <div className="fixed inset-0 z-[300] bg-black/80 flex items-center justify-center p-2 md:p-4">
+        <div className="fixed inset-0 z-[300] bg-black/80 flex items-center justify-center p-4">
              <div className="bg-[#0f172a] border border-cyan-500 rounded-lg p-6 w-full max-w-lg shadow-2xl neon-border h-[85vh] flex flex-col relative">
-                <div className="absolute top-2 right-12">
-                     <button onClick={handleShare} className="p-2 text-cyan-400 hover:text-white" title="Share Tasks">🔗</button>
-                </div>
-                <button onClick={onClose} className="absolute top-4 right-4 text-red-500 font-bold hover:text-red-400">[X]</button>
                 
-                <div className="flex gap-2 mb-6 border-b border-gray-700">
-                    <button onClick={() => setActiveTab('daily')} className={`px-4 py-2 text-sm font-bold rounded-t-lg transition-colors ${activeTab === 'daily' ? 'bg-cyan-600 text-white' : 'bg-gray-800 text-gray-500 hover:bg-gray-700'}`}>TAB DAILY</button>
-                    <button onClick={() => setActiveTab('monthly')} className={`px-4 py-2 text-sm font-bold rounded-t-lg transition-colors ${activeTab === 'monthly' ? 'bg-cyan-600 text-white' : 'bg-gray-800 text-gray-500 hover:bg-gray-700'}`}>TAB MONTHLY</button>
+                {/* Share Button */}
+                <button onClick={handleShare} className="absolute top-6 right-16 text-cyan-400 hover:text-white" title="Share Tasks">
+                    🔗
+                </button>
+                <button onClick={onClose} className="absolute top-6 right-6 text-red-500 font-bold hover:text-red-400">[X]</button>
+
+                {/* Tabs */}
+                <div className="flex gap-2 mb-4 border-b border-gray-700 pb-2 mt-4">
+                    <button onClick={() => setActiveTab('daily')} className={`px-4 py-2 text-sm font-bold rounded-t-lg transition-colors ${activeTab === 'daily' ? 'bg-cyan-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}>TAB DAILY</button>
+                    <button onClick={() => setActiveTab('monthly')} className={`px-4 py-2 text-sm font-bold rounded-t-lg transition-colors ${activeTab === 'monthly' ? 'bg-cyan-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}>TAB MONTHLY</button>
                 </div>
 
-                <div className="text-center mb-6">
-                    <h2 className="text-2xl font-fredoka text-cyan-400 uppercase">{activeTab === 'daily' ? dailyTitle : monthlyTitle}</h2>
+                {/* Header */}
+                <div className="mb-4 text-center">
+                    <h2 className="text-2xl font-fredoka text-white">{activeTab === 'daily' ? dailyHeader : monthlyHeader}</h2>
                 </div>
 
-                <div className="flex-1 overflow-y-auto mb-4 custom-scrollbar bg-black/20 p-2 rounded">
+                {/* Task List */}
+                <div className="flex-1 overflow-y-auto mb-4 custom-scrollbar bg-black/20 p-2 rounded border border-gray-700">
                     {displayTasks.length === 0 ? (
                         <p className="text-gray-500 text-center italic text-sm mt-10">No tasks logged.</p>
                     ) : (
-                        displayTasks.map((t: Task) => (
-                            <div key={t.id} className={`flex items-center justify-between p-2 mb-2 rounded border ${t.isCompleted ? 'bg-green-900/10 border-green-800' : 'bg-gray-800 border-gray-700'}`} style={!t.isCompleted ? { borderLeft: `3px solid ${highlightColor}` } : {}}>
-                                <div className="flex items-center gap-2">
-                                    <button onClick={() => toggleTask(t.id)} className={`w-5 h-5 rounded border flex items-center justify-center ${t.isCompleted ? 'bg-green-500 border-green-500 text-black' : 'border-gray-500'}`}>
+                        displayTasks.map((t: any) => (
+                            <div key={t.id} className={`flex items-center justify-between p-2 mb-2 rounded border ${t.isCompleted ? 'bg-green-900/20 border-green-700' : 'bg-gray-800 border-gray-700'}`} style={!t.isCompleted ? { borderLeft: `3px solid ${highlightColor}` } : {}}>
+                                <div className="flex items-center gap-2 w-full">
+                                    <button onClick={() => toggleTask(t.id)} className={`flex-shrink-0 w-5 h-5 rounded border flex items-center justify-center ${t.isCompleted ? 'bg-green-500 border-green-500 text-black' : 'border-gray-500'}`}>
                                         {t.isCompleted && '✓'}
                                     </button>
-                                    <div>
-                                        <p className={`text-sm ${t.isCompleted ? 'text-gray-500 line-through italic' : 'text-white'}`}>{t.content}</p>
-                                        <p className="text-[10px] text-cyan-400 font-mono">
-                                            {activeTab === 'daily' ? (t.timeSlot || '--:--') : t.date}
+                                    <div className="overflow-hidden">
+                                        <p className={`text-sm break-words ${t.isCompleted ? 'text-gray-500 line-through' : 'text-white'}`}>{t.content}</p>
+                                        <p className="text-[10px] text-cyan-300">
+                                            {activeTab === 'monthly' ? t.date : t.timeSlot || 'All Day'}
                                         </p>
                                     </div>
                                 </div>
-                                <button onClick={() => deleteTask(t.id)} className="text-red-500 hover:text-red-400 text-xs">DEL</button>
+                                <button onClick={() => deleteTask(t.id)} className="text-red-500 hover:text-red-400 text-xs ml-2">DEL</button>
                             </div>
                         ))
                     )}
                 </div>
 
-                <div className="mt-auto pt-4 border-t border-gray-700 flex flex-col gap-2">
-                    <div className="flex gap-2">
+                {/* Input Area */}
+                <div className="mt-auto pt-4 border-t border-gray-700">
+                    <div className="flex gap-2 mb-2 items-center">
                         {activeTab === 'daily' ? (
-                             <input type="time" className="bg-gray-800 text-white p-2 rounded border border-gray-600 text-xs w-28" value={newTime} onChange={e => setNewTime(e.target.value)} />
+                            <input type="time" className="bg-gray-800 text-white p-2 rounded border border-gray-600 text-xs w-24" value={newTime} onChange={e => setNewTime(e.target.value)} />
                         ) : (
-                             <select className="bg-gray-800 text-white p-2 rounded border border-gray-600 text-xs w-28" value={newMonthDate} onChange={e => setNewMonthDate(e.target.value)}>
-                                 {Array.from({length: 31}, (_, i) => i+1).map(d => <option key={d} value={d}>Date {d}</option>)}
-                             </select>
+                            <input type="date" className="bg-gray-800 text-white p-2 rounded border border-gray-600 text-xs w-32" value={newDateForMonth} onChange={e => setNewDateForMonth(e.target.value)} min={`${currentYear}-${String(currentMonth).padStart(2,'0')}-01`} max={`${currentYear}-${String(currentMonth).padStart(2,'0')}-31`} />
                         )}
-                        <input type="text" placeholder={activeTab === 'daily' ? "Catatan / Memo..." : "Plan / Schedule..."} className="flex-1 bg-gray-800 text-white p-2 rounded border border-gray-600 text-sm focus:border-cyan-500 outline-none" value={newTask} onChange={e => setNewTask(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAdd()} />
+                        <input type="text" placeholder={activeTab === 'daily' ? "Note / Memo..." : "Plan / Schedule..."} className="flex-1 bg-gray-800 text-white p-2 rounded border border-gray-600 text-sm focus:border-cyan-500 outline-none" value={newTask} onChange={e => setNewTask(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAdd()} />
                     </div>
-                    <div className="flex justify-between items-center gap-2">
-                        <div className="flex items-center gap-2 bg-gray-800 px-3 py-1 rounded border border-gray-700">
-                             <label className="text-[10px] font-bold text-gray-400">HIGHLIGHT:</label>
-                             <input type="color" value={highlightColor} onChange={e => setHighlightColor(e.target.value)} className="bg-transparent border-none w-6 h-6 cursor-pointer" />
-                        </div>
-                        <button onClick={handleAdd} className="bg-cyan-600 hover:bg-cyan-500 text-white py-2 px-6 rounded font-bold text-sm shadow-[0_0_15px_#06b6d4]">SAVE LOG</button>
+                    <div className="flex justify-between items-center mt-2">
+                         <div className="flex items-center gap-2">
+                            <label className="text-[10px] text-gray-400">Highlight:</label>
+                            <input type="color" value={highlightColor} onChange={e => setHighlightColor(e.target.value)} className="bg-transparent border-none w-6 h-6 cursor-pointer" />
+                         </div>
+                         <button onClick={handleAdd} className="bg-cyan-600 hover:bg-cyan-500 text-white py-1.5 px-6 rounded font-bold text-sm shadow-[0_0_10px_#06b6d4]">ADD LOG</button>
                     </div>
                 </div>
              </div>
@@ -651,17 +681,63 @@ const TaskModal = ({ isOpen, onClose, dateStr, tasks, onSaveTask, isDark }: any)
     );
 };
 
+const EventModal = ({ isOpen, onClose, onSave }: any) => {
+    const [title, setTitle] = useState('');
+    const [date, setDate] = useState('');
+    const [time, setTime] = useState('');
+    const [color, setColor] = useState('#00ffdf');
+
+    if (!isOpen) return null;
+
+    const handleSubmit = () => {
+        if (!title || !date) return;
+        onSave({ id: Date.now().toString(), title, date, time, color });
+        setTitle(''); setDate(''); setTime('');
+        onClose();
+    };
+
+    return (
+        <div className="fixed inset-0 z-[300] bg-black/80 flex items-center justify-center p-4">
+            <div className="bg-[#0f172a] border border-cyan-500 rounded-lg p-6 w-full max-w-sm shadow-2xl neon-border">
+                <h3 className="text-cyan-400 font-bold font-tech mb-4">ADD EVENT</h3>
+                <input type="text" placeholder="Event Title" className="w-full bg-gray-800 text-white p-2 rounded mb-2 border border-gray-600 focus:border-cyan-500 outline-none" value={title} onChange={e => setTitle(e.target.value)} />
+                <input type="date" className="w-full bg-gray-800 text-white p-2 rounded mb-2 border border-gray-600 focus:border-cyan-500 outline-none" value={date} onChange={e => setDate(e.target.value)} />
+                <input type="time" className="w-full bg-gray-800 text-white p-2 rounded mb-2 border border-gray-600 focus:border-cyan-500 outline-none" value={time} onChange={e => setTime(e.target.value)} />
+                <div className="flex items-center gap-2 mb-4">
+                    <label className="text-white text-xs">Color:</label>
+                    <input type="color" value={color} onChange={e => setColor(e.target.value)} className="bg-transparent border-none h-8 w-8 cursor-pointer" />
+                </div>
+                <div className="flex justify-end gap-2">
+                    <button onClick={onClose} className="px-4 py-2 text-red-400 hover:text-red-300 text-xs font-bold">CANCEL</button>
+                    <button onClick={handleSubmit} className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-xs font-bold shadow-[0_0_10px_#06b6d4]">SAVE</button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 // --- Calendar View ---
-const CalendarView = ({ date, type, days, onDayClick, isDark, viewFormat, period, contentMode, apiHolidays }: any) => {
+const CalendarView = ({ date, setDate, days, onDayClick, isDark, viewFormat, period, contentMode, onAddEventClick, apiHolidays }: any) => {
+    const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const isYearly = period === CalendarPeriod.YEARLY;
     const isDaily = period === CalendarPeriod.DAILY;
     const isHorizontal = viewFormat === CalendarViewFormat.HORIZONTAL;
 
+    // Helper to get day class for high contrast in light mode
     const getDayClass = (d: any) => {
         if (!d || d.day === 0) return 'invisible';
-        const holiday = d.isHoliday ? '!text-red-600 !font-black' : '';
-        const today = d.isToday ? 'bg-cyan-600 text-white font-bold shadow-md' : (isDark ? 'bg-white/5 text-white border-white/10' : 'bg-white text-black border-gray-300 font-bold shadow-sm');
-        return `${today} ${holiday}`;
+        
+        // Forced high contrast for light mode
+        const lightModeClass = 'bg-white text-black font-extrabold border border-gray-300 shadow-[inset_0_0_1px_rgba(0,0,0,0.2)] hover:bg-gray-100';
+        const darkModeClass = 'bg-white/5 text-gray-400 hover:bg-white/10';
+
+        const base = d.day > 0 
+            ? (d.isToday ? 'bg-cyan-600 text-white font-bold shadow-md' : (!isDark ? lightModeClass : darkModeClass)) 
+            : 'invisible';
+            
+        // Highlight holidays in RED based on API data
+        const holiday = d.isHoliday ? '!text-red-600 !font-extrabold' : '';
+        return `${base} ${holiday}`;
     };
 
     if (isDaily) {
@@ -670,16 +746,41 @@ const CalendarView = ({ date, type, days, onDayClick, isDark, viewFormat, period
 
         if (!selectedData) return <div className="text-center p-10 text-gray-500">Date data unavailable</div>;
 
+        if (isHorizontal) {
+             return (
+                <div className={`flex flex-col items-center justify-center p-4 border rounded-lg h-full w-full relative overflow-hidden ${isDark ? 'border-cyan-500/30 bg-black/40 neon-border' : 'border-gray-400 bg-white shadow-lg'}`}>
+                    {/* Horizontal Daily - Large Display */}
+                    <div className="absolute top-2 right-4 text-xs font-cyber tracking-widest opacity-50">{date.getFullYear()}</div>
+                    <div className="flex flex-col items-center justify-center flex-1 w-full">
+                         <h2 className={`text-4xl md:text-5xl font-jannah font-bold mb-0 ${isDark ? 'text-cyan-400' : 'text-blue-800'}`}>
+                            {date.toLocaleDateString('en-US', {weekday:'long'})}
+                         </h2>
+                         <div className={`text-[120px] md:text-[180px] font-fredoka font-bold leading-none ${isDark ? 'text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'text-black'} ${selectedData.isHoliday ? '!text-red-600' : ''}`}>
+                             {selectedData.day}
+                         </div>
+                         <div className={`text-2xl md:text-3xl font-jannah uppercase tracking-widest mt-2 ${isDark ? 'text-fuchsia-400' : 'text-gray-700'}`}>
+                             {date.toLocaleDateString('en-US', {month: 'long'})}
+                         </div>
+                         <div className="mt-6 text-center border-t border-gray-600 w-3/4 pt-2">
+                             <p className={`text-lg md:text-xl font-jannah ${isDark ? 'text-yellow-400' : 'text-gray-900 font-bold'}`}>{selectedData.nativeDateStr}</p>
+                             {selectedData.isHoliday && <p className="text-red-500 font-black mt-1 animate-pulse text-xl uppercase">{selectedData.holidayName}</p>}
+                         </div>
+                    </div>
+                </div>
+             );
+        }
+
+        // Vertical Daily (Default Card)
         return (
-            <div className={`flex flex-col items-center justify-center p-6 md:p-10 border rounded-lg h-full min-h-[400px] ${isDark ? 'border-cyan-500/30 bg-black/40 neon-border' : 'border-gray-400 bg-white shadow-xl'}`}>
-                <h2 className={`text-2xl md:text-3xl font-jannah mb-2 uppercase tracking-widest ${isDark ? 'text-cyan-400' : 'text-blue-900 font-black'}`}>{date.toLocaleDateString('id-ID', {weekday:'long'})}</h2>
-                <div className={`text-[120px] md:text-[180px] font-fredoka font-bold leading-none ${isDark ? 'text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'text-black'}`}>
+            <div className={`flex flex-col items-center justify-center p-8 border rounded-lg min-h-[400px] w-full h-full ${isDark ? 'border-cyan-500/30 bg-black/40 neon-border' : 'border-gray-400 bg-white shadow-lg'}`}>
+                <h2 className={`text-3xl font-jannah mb-2 ${isDark ? 'text-cyan-400' : 'text-black font-bold'}`}>{date.toLocaleDateString('en-US', {weekday:'long'})}</h2>
+                <div className={`text-[150px] font-fredoka font-bold leading-none relative ${isDark ? 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]' : 'text-black'} ${selectedData.isHoliday ? '!text-red-600' : ''}`}>
                     {selectedData.day}
                 </div>
-                <div className={`text-3xl md:text-5xl font-bold mt-4 font-fredoka ${isDark ? 'text-fuchsia-500' : 'text-purple-800'}`}>{date.getFullYear()}</div>
-                <div className="mt-8 text-center border-t border-gray-200 w-full pt-4">
-                    <p className={`text-lg md:text-xl font-jannah ${isDark ? 'text-yellow-400' : 'text-gray-900 font-black'}`}>{selectedData.nativeDateStr}</p>
-                    {selectedData.isHoliday && <p className="text-red-600 font-black mt-2 animate-pulse text-xl md:text-2xl uppercase">{selectedData.holidayName}</p>}
+                <div className={`text-4xl font-bold mt-4 font-fredoka ${isDark ? 'text-fuchsia-500' : 'text-purple-700'}`}>{date.getFullYear()}</div>
+                <div className="mt-8 text-center">
+                    <p className={`text-xl font-jannah ${isDark ? 'text-yellow-400' : 'text-gray-800 font-bold'}`}>{selectedData.nativeDateStr}</p>
+                    {selectedData.isHoliday && <p className="text-red-600 font-extrabold mt-2 animate-pulse text-2xl">{selectedData.holidayName}</p>}
                 </div>
             </div>
         );
@@ -687,27 +788,35 @@ const CalendarView = ({ date, type, days, onDayClick, isDark, viewFormat, period
 
     if (isYearly) {
         const months = Array.from({length: 12}, (_, i) => i);
-        // Vertical Yearly: 3 cols wide (3x4)
-        // Horizontal Yearly: 4 cols wide (4x3)
-        const gridClass = isHorizontal 
-            ? 'grid-cols-2 md:grid-cols-4' 
-            : 'grid-cols-1 md:grid-cols-3';
+        
+        // Vertical Yearly: 3 cols x 4 rows
+        // Horizontal Yearly: 4 cols x 3 rows (Fixed 4x3)
+        // Responsive handling: 
+        // If vertical view mode: mobile=1col, tablet=2col, desktop=3col
+        // If horizontal view mode: mobile=1col, tablet=2col, desktop=4col (to make 4x3)
+        let gridClass = '';
+        if (viewFormat === CalendarViewFormat.HORIZONTAL) {
+             gridClass = 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'; // 4 columns for large screens
+        } else {
+             gridClass = 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'; // 3 columns for vertical view
+        }
 
         return (
-            <div className={`grid ${gridClass} gap-2 md:gap-4 w-full h-full overflow-y-auto pb-10 custom-scrollbar p-1`}>
+            <div className={`grid ${gridClass} gap-2 w-full h-full overflow-y-auto custom-scrollbar p-1`}>
                 {months.map(m => {
                     const mDate = new Date(date.getFullYear(), m, 1);
+                    // Re-fetch logic locally for visual rendering of small months
                     const mDays = getMonthData(date.getFullYear(), m, CalendarType.GREGORIAN, "ID", "en-US", [], [], apiHolidays);
                     return (
-                        <div key={m} className={`border p-2 rounded transition-all hover:scale-[1.02] ${isDark ? 'border-cyan-500/20 bg-black/40 hover:border-cyan-500/60' : 'border-gray-400 bg-white hover:border-black shadow-md'}`}>
-                            <h4 className={`text-center font-bold mb-2 text-[10px] md:text-xs uppercase tracking-widest ${isDark ? 'text-cyan-400 font-fredoka' : 'text-black font-black'}`}>{mDate.toLocaleString('default', { month: 'long' })}</h4>
-                            <div className="grid grid-cols-7 gap-1">
+                        <div key={m} className={`border p-1.5 rounded transition-colors ${isDark ? 'border-cyan-500/20 bg-black/40 hover:border-cyan-500/60' : 'border-gray-400 bg-white hover:border-black shadow-sm'}`}>
+                            <h4 className={`text-center font-bold mb-1 text-[10px] uppercase tracking-widest ${isDark ? 'text-cyan-400' : 'text-black'}`}>{mDate.toLocaleString('default', { month: 'long' })}</h4>
+                            <div className="grid grid-cols-7 gap-0.5">
                                 {['S','M','T','W','T','F','S'].map(d => (
-                                    <div key={d} className={`text-center text-[8px] md:text-[9px] font-bold ${isDark ? 'text-gray-500' : 'text-gray-800'}`}>{d}</div>
+                                    <div key={d} className={`text-center text-[8px] font-bold ${isDark ? 'text-gray-500' : 'text-gray-800'}`}>{d}</div>
                                 ))}
                                 {mDays.map((d, i) => (
-                                    <div key={i} className={`aspect-square flex items-center justify-center text-[8px] md:text-[9px] rounded-sm cursor-default transition-colors ${getDayClass(d)}`}>
-                                        {d.day > 0 ? d.day : ''}
+                                    <div key={i} className={`aspect-square flex items-center justify-center text-[8px] rounded-sm cursor-default ${getDayClass(d)}`}>
+                                        {d.day}
                                     </div>
                                 ))}
                             </div>
@@ -719,35 +828,49 @@ const CalendarView = ({ date, type, days, onDayClick, isDark, viewFormat, period
     }
 
     return (
-        <div className={`relative p-2 rounded-lg overflow-hidden ${isDark ? 'bg-black/20 border border-cyan-500/30 neon-border' : 'bg-white border border-gray-300 shadow-xl'} w-full h-full`}>
+        <div className={`relative p-2 rounded-lg overflow-hidden ${isDark ? 'bg-black/20 border border-cyan-500/30 neon-border' : 'bg-white border border-gray-300'} w-full h-full`}>
              <div className="grid grid-cols-7 gap-1 h-full content-start">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                    <div key={day} className={`font-jannah font-bold text-center py-2 text-[10px] md:text-sm border-b uppercase tracking-tighter ${isDark ? 'text-[#00594C] bg-white' : 'text-black bg-gray-200 border-gray-400'}`}>
+                {weekDays.map(day => (
+                    <div key={day} className={`font-jannah font-bold text-center py-1 text-[10px] md:text-xs border-b ${isDark ? 'text-[#00594C] bg-white' : 'text-black bg-gray-200 border-gray-400'}`}>
                         {day}
                     </div>
                 ))}
                 {days.map((day: any, idx: number) => (
-                    <div key={idx} onClick={() => day.day > 0 && onDayClick(day)}
-                        className={`min-h-[60px] md:min-h-[100px] p-1 border flex flex-col items-center justify-start relative cursor-pointer transition-all group
-                            ${day.isToday ? 'bg-cyan-600/20 border-cyan-400' : (isDark ? 'text-white border-cyan-500/10 hover:bg-cyan-900/30' : 'text-black border-gray-300 font-bold hover:bg-gray-100')}
-                            ${day.isHoliday ? 'bg-red-900/5' : ''} ${day.day === 0 ? 'invisible' : ''}`}>
+                    <div 
+                        key={idx}
+                        onClick={() => day.day > 0 && onDayClick(day)}
+                        className={`
+                            min-h-[50px] md:min-h-[80px] p-1 border flex flex-col items-center justify-start relative cursor-pointer transition-all group
+                            ${day.isToday ? 'bg-white text-[#00594C] font-bold shadow-[0_0_10px_white]' : (isDark ? 'text-white border-cyan-500/30 hover:bg-cyan-900/30 hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]' : 'text-black font-bold border-gray-300 hover:bg-gray-100')}
+                            ${day.isHoliday ? 'bg-red-900/10' : ''}
+                            ${day.day === 0 ? 'invisible' : ''}
+                        `}
+                    >
                         {day.day > 0 && (
                             <>
-                                <span className={`font-jannah font-bold text-base md:text-2xl ${day.isHoliday ? 'text-red-600 font-black' : ''}`}>
+                                <span className={`font-jannah font-bold text-sm md:text-lg ${day.isHoliday ? 'text-red-600' : ''}`}>
                                     {contentMode === CalendarContentMode.NATIVE_ONLY ? day.nativeDay : day.day}
                                 </span>
-                                {contentMode === CalendarContentMode.DUAL && (
-                                    <span className={`text-[10px] md:text-xs mt-1 font-jannah ${isDark ? 'opacity-70' : 'text-gray-600'}`}>{day.nativeDay}</span>
+                                 {contentMode === CalendarContentMode.DUAL && (
+                                    <span className={`text-[9px] mt-1 font-jannah ${isDark ? 'opacity-70' : 'text-gray-600'}`}>{day.nativeDay}</span>
                                 )}
                                 {day.weton && (
-                                    <span className={`text-[9px] md:text-[11px] block mt-1 font-jannah uppercase tracking-tighter font-bold ${isDark ? 'text-yellow-500/80' : 'text-orange-700'}`}>
+                                    <span className={`text-[8px] block mt-0.5 font-jannah uppercase tracking-tighter ${isDark ? 'text-yellow-500/70' : 'text-orange-600/80'}`}>
                                         {day.weton}
                                     </span>
                                 )}
-                                {day.hasTasks && <div className="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full animate-pulse shadow-[0_0_8px_yellow]"></div>}
-                                <div className="mt-auto w-full flex justify-center pb-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                     <span className="text-[10px] text-cyan-400 font-bold">+ LOG</span>
+                                {day.hasTasks && <div className="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full animate-pulse shadow-[0_0_5px_yellow]" title="Has Tasks"></div>}
+                                {day.hasReminders && <div className="absolute top-1 right-4 text-[8px] text-yellow-400 animate-bounce">🔔</div>}
+                                <div className="flex flex-wrap gap-1 mt-1 justify-center">
+                                    {day.events?.map((e: any, i: number) => (
+                                        <div key={i} className="w-1.5 h-1.5 rounded-full" style={{backgroundColor: e.color || '#00ffdf', boxShadow: `0 0 5px ${e.color}`}} title={e.title}></div>
+                                    ))}
                                 </div>
+                                <button 
+                                    onClick={(e) => { e.stopPropagation(); onAddEventClick(day); }}
+                                    className="absolute bottom-1 right-1 opacity-0 group-hover:opacity-100 text-[10px] text-fuchsia-400 font-bold hover:scale-110"
+                                    title="Add Event"
+                                >+</button>
                             </>
                         )}
                     </div>
@@ -766,6 +889,7 @@ function App() {
     const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isGuest, setIsGuest] = useState(false);
+    const [isEventModalOpen, setIsEventModalOpen] = useState(false);
     const subPageRef = useRef<HTMLDivElement>(null);
     const printRef = useRef<HTMLDivElement>(null);
     const [format, setFormat] = useState<CalendarViewFormat>(CalendarViewFormat.VERTICAL);
@@ -781,17 +905,24 @@ function App() {
     const [showGuide, setShowGuide] = useState(false);
     const [showTerms, setShowTerms] = useState(false);
     const [showFAQ, setShowFAQ] = useState(false);
+    const [showContact, setShowContact] = useState(false);
     const [showFindUs, setShowFindUs] = useState(false);
     const [showTutorial, setShowTutorial] = useState(false);
-    const [customEvents, setCustomEvents] = useState<CustomEvent[]>(() => JSON.parse(localStorage.getItem('digicald_events') || '[]'));
-    const [tasks, setTasks] = useState<Task[]>(() => JSON.parse(localStorage.getItem('digicald_tasks') || '[]'));
+    const [customEvents, setCustomEvents] = useState<CustomEvent[]>(() => {
+        const saved = localStorage.getItem('digicald_events');
+        return saved ? JSON.parse(saved) : [];
+    });
+    const [tasks, setTasks] = useState<Task[]>(() => {
+        const saved = localStorage.getItem('digicald_tasks');
+        return saved ? JSON.parse(saved) : [];
+    });
     const [selectedTaskDate, setSelectedTaskDate] = useState<string | null>(null);
     const [apiHolidays, setApiHolidays] = useState<any[]>([]);
     const [date, setDate] = useState(new Date());
     const [appSettings, setAppSettings] = useState<AppSettings>(() => {
         const saved = localStorage.getItem('digicald_settings');
-        // Default theme is 'light' as per request
-        return saved ? JSON.parse(saved) : { theme: 'light', zoom: 1, language: 'id-ID', isFullscreen: false, taskHighlightColor: '#FFFF00' };
+        // Default theme is 'light'
+        return saved ? JSON.parse(saved) : { theme: 'light', zoom: 1, language: 'en-US', isFullscreen: false, taskHighlightColor: '#FFFF00' };
     });
     const [systemTheme, setSystemTheme] = useState(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
@@ -801,17 +932,13 @@ function App() {
         mq.addEventListener('change', listener);
         return () => mq.removeEventListener('change', listener);
     }, []);
-
     const isDark = appSettings.theme === 'auto' ? systemTheme === 'dark' : appSettings.theme === 'dark';
-    
     useEffect(() => {
         if (!isDark) document.body.classList.add('light-mode');
         else document.body.classList.remove('light-mode');
     }, [isDark]);
-
     useEffect(() => { localStorage.setItem('digicald_tasks', JSON.stringify(tasks)); }, [tasks]);
     useEffect(() => { localStorage.setItem('digicald_events', JSON.stringify(customEvents)); }, [customEvents]);
-    
     useEffect(() => {
         const loadHolidays = async () => {
             const h = await fetchHolidays(date.getFullYear(), country);
@@ -819,90 +946,257 @@ function App() {
         };
         loadHolidays();
     }, [date.getFullYear(), country]);
-
     useEffect(() => {
         localStorage.setItem('digicald_settings', JSON.stringify(appSettings));
         document.body.style.transform = `scale(${appSettings.zoom})`;
         document.body.style.transformOrigin = 'top center';
     }, [appSettings]);
+    useEffect(() => {
+        const hasSeenTutorial = localStorage.getItem('digicald_tutorial_seen');
+        if (!hasSeenTutorial && isLoggedIn) {
+            setTimeout(() => setShowTutorial(true), 1500);
+        }
+    }, [isLoggedIn]);
 
-    // Fix: Missing handleExport
-    const handleExport = () => {
-        exportToICS(customEvents, apiHolidays);
-    };
-
-    const handleLogin = () => setIsLoggedIn(true);
-    // Fix: Fixed window.deferredPrompt type error
-    const handlePWAInstall = () => { if ((window as any).deferredPrompt) (window as any).deferredPrompt.prompt(); else alert("Installation handled by browser."); };
+    const handleTutorialClose = () => { setShowTutorial(false); localStorage.setItem('digicald_tutorial_seen', 'true'); };
+    const handleLogin = async () => { setIsLoggedIn(true); };
+    const handlePWAInstall = () => { if (window.deferredPrompt) { window.deferredPrompt.prompt(); window.deferredPrompt.userChoice.then((choiceResult: any) => { window.deferredPrompt = null; }); } else { alert("App install handled by browser. Check address bar or share menu."); } };
+    useEffect(() => { window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); window.deferredPrompt = e; }); }, []);
+    const saveTasksToStorage = (newTasks: Task[]) => { setTasks(newTasks); };
+    const handleAddEvent = (newEvent: CustomEvent) => { setCustomEvents([...customEvents, newEvent]); };
+    const handleExport = () => { exportToICS(customEvents, apiHolidays); };
     const handleImageGenerated = (img: string) => { setGeneratedImageTemp(img); setShowImageResult(true); };
-    // Fix: Fixed MediaItem type casting for setMediaList
-    const handleSaveImage = () => { if (generatedImageTemp) { setMediaList(prev => [...prev, { type: 'image' as const, url: generatedImageTemp, id: Date.now().toString() }].slice(-3)); setShowImageResult(false); setShowAiBuilder(false); } };
-    // Fix: Fixed MediaItem type casting for setMediaList
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => { if (e.target.files?.[0]) { setMediaList(prev => [...prev, { type: (e.target.files![0].type.startsWith('video') ? 'video' : 'image') as any, url: URL.createObjectURL(e.target.files![0]), id: Date.now().toString() }].slice(-3)); } };
+    const handleSaveImage = () => { if (generatedImageTemp) { const newItem: MediaItem = { type: 'image', url: generatedImageTemp, id: Date.now().toString() }; setMediaList(prev => [...prev, newItem].slice(-3)); setCurrentMediaIndex(prev => prev === 0 && mediaList.length === 0 ? 0 : prev); setGeneratedImageTemp(null); setShowImageResult(false); setShowAiBuilder(false); } };
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => { if (e.target.files && e.target.files[0]) { const file = e.target.files[0]; const url = URL.createObjectURL(file); const newItem: MediaItem = { type: file.type.startsWith('video') ? 'video' : 'image', url: url, id: Date.now().toString() }; setMediaList(prev => { const newList = [...prev, newItem]; return newList.length > 3 ? newList.slice(1) : newList; }); setCurrentMediaIndex(mediaList.length); } };
+    const days = getMonthData(date.getFullYear(), date.getMonth(), selectedCalendar, country, appSettings.language, customEvents, tasks, apiHolidays);
+    const isHorizontal = format === CalendarViewFormat.HORIZONTAL;
 
-    const handlePrev = () => {
-        const d = new Date(date);
-        if (period === CalendarPeriod.DAILY) d.setDate(d.getDate() - 1);
-        else if (period === CalendarPeriod.MONTHLY) d.setMonth(d.getMonth() - 1);
-        else d.setFullYear(d.getFullYear() - 1);
-        setDate(d);
-    };
+    // Logic for showing Starfield: Login, Main Menu, or Gregorian Subpage only.
+    const showStars = !isLoggedIn || view === 'main' || (view === 'sub' && selectedCalendar === CalendarType.GREGORIAN);
+    
+    // Updated Holiday Display Block
+    const HolidayBlock = () => (
+        <div className={`w-full border p-2 rounded mt-2 ${isDark ? 'bg-black/30 border-gray-700' : 'bg-white border-gray-300'}`}>
+            <h4 className={`font-bold text-sm mb-1 ${isDark ? 'text-cyan-400' : 'text-black'}`}>Holiday Information ({country})</h4>
+            <div className={`text-xs max-h-20 overflow-y-auto ${isDark ? 'text-white' : 'text-black'}`}>
+                {apiHolidays.filter(h => { const hDate = new Date(h.date); return hDate.getMonth() === date.getMonth() && hDate.getFullYear() === date.getFullYear(); }).length > 0 ? (
+                    apiHolidays.filter(h => { const hDate = new Date(h.date); return hDate.getMonth() === date.getMonth() && hDate.getFullYear() === date.getFullYear(); }).map((h, i) => (<p key={i}><span className="text-red-600 font-bold">{h.date}:</span> {h.localName || h.name}</p>))
+                ) : <p className="opacity-50">No holidays this month.</p>}
+            </div>
+        </div>
+    );
 
-    const handleNext = () => {
-        const d = new Date(date);
-        if (period === CalendarPeriod.DAILY) d.setDate(d.getDate() + 1);
-        else if (period === CalendarPeriod.MONTHLY) d.setMonth(d.getMonth() + 1);
-        else d.setFullYear(d.getFullYear() + 1);
-        setDate(d);
-    };
-
-    const handleSaveFile = async (type: string) => {
+    const handleSaveFile = async (formatType: string) => {
         if (!printRef.current) return;
-        if (type === 'mpeg') {
-            alert("Digital Video export requires screen recording permissions. Starting recorder UI simulation...");
+        
+        // Hide controls during capture using data-html2canvas-ignore (already added to control div)
+        const canvas = await html2canvas(printRef.current, { useCORS: true, scale: 2 });
+        
+        if (formatType === 'mpeg') {
+            alert("Video export requires external screen recording tools. Please use your device's screen recorder for high fidelity video.");
             return;
         }
-        const canvas = await html2canvas(printRef.current, { useCORS: true, scale: 2 });
-        const data = canvas.toDataURL(`image/${type === 'pdf' ? 'png' : type}`);
-        if (type === 'pdf') {
+        
+        if (formatType === 'pdf') {
             const pdf = new jsPDF('p', 'mm', 'a4');
-            pdf.addImage(data, 'PNG', 0, 0, 210, 297);
-            pdf.save(`digicald-${Date.now()}.pdf`);
+            const imgData = canvas.toDataURL('image/png');
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save('digicald-calendar.pdf');
         } else {
             const link = document.createElement('a');
-            link.download = `digicald-${Date.now()}.${type}`;
-            link.href = data;
+            link.download = `digicald-calendar.${formatType}`;
+            link.href = canvas.toDataURL(`image/${formatType}`);
             link.click();
         }
     };
 
-    const days = getMonthData(date.getFullYear(), date.getMonth(), selectedCalendar, country, appSettings.language, customEvents, tasks, apiHolidays);
-    const isHorizontal = format === CalendarViewFormat.HORIZONTAL;
-    const showStars = !isLoggedIn || view === 'main' || (view === 'sub' && selectedCalendar === CalendarType.GREGORIAN);
+    const renderSubPage = () => {
+        const today = new Date();
+        const todayGregorian = getFormattedDateString(today, CalendarType.GREGORIAN, appSettings.language);
+        const todayNative = getFormattedDateString(date, selectedCalendar, appSettings.language);
+        // Dynamic labels based on Period
+        let navLabelMain = "";
+        let navLabelSub = "";
 
-    const navLabel = period === CalendarPeriod.DAILY 
-        ? date.toLocaleDateString(appSettings.language, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-        : period === CalendarPeriod.MONTHLY 
-            ? date.toLocaleDateString(appSettings.language, { month: 'long', year: 'numeric' })
-            : date.getFullYear().toString();
+        if (period === CalendarPeriod.DAILY) {
+            navLabelMain = date.toLocaleDateString(appSettings.language, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        } else if (period === CalendarPeriod.MONTHLY) {
+            navLabelMain = date.toLocaleDateString(appSettings.language, { month: 'long', year: 'numeric' });
+        } else if (period === CalendarPeriod.YEARLY) {
+            navLabelMain = date.getFullYear().toString();
+        }
 
-    const holidaysThisMonth = apiHolidays.filter(h => {
-        const hDate = new Date(h.date);
-        return hDate.getMonth() === date.getMonth() && hDate.getFullYear() === date.getFullYear();
-    });
+        const currentMedia = mediaList[currentMediaIndex];
+
+        // Navigation Handlers
+        const handlePrev = () => {
+            const newDate = new Date(date);
+            if (period === CalendarPeriod.DAILY) {
+                newDate.setDate(date.getDate() - 1);
+            } else if (period === CalendarPeriod.MONTHLY) {
+                newDate.setMonth(date.getMonth() - 1);
+            } else if (period === CalendarPeriod.YEARLY) {
+                newDate.setFullYear(date.getFullYear() - 1);
+            }
+            setDate(newDate);
+        };
+
+        const handleNext = () => {
+            const newDate = new Date(date);
+            if (period === CalendarPeriod.DAILY) {
+                newDate.setDate(date.getDate() + 1);
+            } else if (period === CalendarPeriod.MONTHLY) {
+                newDate.setMonth(date.getMonth() + 1);
+            } else if (period === CalendarPeriod.YEARLY) {
+                newDate.setFullYear(date.getFullYear() + 1);
+            }
+            setDate(newDate);
+        };
+
+        return (
+            <div ref={subPageRef} className={`flex flex-col gap-4 w-full ${isHorizontal ? 'max-w-[95vw]' : 'max-w-4xl'} bg-transparent transition-all duration-500`}>
+                <div ref={printRef} className="flex flex-col gap-4 p-2 bg-transparent">
+                    <div className={`text-center p-2 rounded bg-black/40 backdrop-blur-sm shadow-lg w-full ${isDark ? 'border border-cyan-500/30' : 'border border-gray-400 bg-white/80'}`}>
+                            <h2 className={`font-jannah text-[12px] font-bold mb-0.5 ${isDark ? 'text-white' : 'text-black'}`}>Today</h2>
+                            <h3 className={`font-jannah text-[12px] ${isDark ? 'text-white' : 'text-gray-900'}`}>{todayGregorian}</h3>
+                            <h3 className={`font-jannah text-[14px] ${isDark ? 'text-[#00FFDF]' : 'text-blue-700 font-bold'}`}>{todayNative}</h3>
+                    </div>
+
+                    {/* Navigation Bar */}
+                    <div className={`flex justify-between items-center w-full p-[2px] rounded-lg shadow-lg ${isDark ? 'bg-gradient-to-r from-[#00FFDF] via-[#0065AD] to-white' : 'bg-gray-300 border border-gray-400'}`}>
+                        <button onClick={handlePrev} className={`px-4 py-2 rounded-l w-16 font-bold font-jannah text-xl flex items-center justify-center transition-colors ${isDark ? 'bg-black text-white hover:bg-gray-800' : 'bg-gray-200 text-black hover:bg-gray-300'}`}>
+                            &lt;
+                        </button>
+                        <div className={`flex-1 px-2 font-jannah font-bold h-full flex flex-col items-center justify-center text-center min-h-[50px] ${isDark ? 'bg-white/95 text-black' : 'bg-white text-black'}`}>
+                            <span className="text-sm md:text-base">{navLabelMain}</span>
+                        </div>
+                        <button onClick={handleNext} className={`px-4 py-2 rounded-r w-16 font-bold font-jannah text-xl flex items-center justify-center transition-colors ${isDark ? 'bg-black text-white hover:bg-gray-800' : 'bg-gray-200 text-black hover:bg-gray-300'}`}>
+                            &gt;
+                        </button>
+                    </div>
+                    
+                    <div className={`w-full transition-all duration-300 ${isHorizontal ? 'grid grid-cols-1 md:grid-cols-2 gap-4 items-start' : 'flex flex-col gap-6'}`}>
+                        
+                        {/* LEFT COLUMN: Media Frame + Controls */}
+                        <div className={`flex flex-col gap-2 ${isHorizontal ? 'h-full' : 'w-full'}`}>
+                            <div className={`relative group transition-all duration-300 ${isHorizontal ? 'w-full h-full min-h-[300px]' : 'w-full aspect-[16/9]'}`}>
+                                <div className={`relative w-full h-full flex items-center justify-center p-2 border-[5px] rounded-lg frame-blink ${isDark ? 'border-cyan-500 shadow-[0_0_15px_#06b6d4]' : 'border-[#00594C]'}`}>
+                                    <div className={`relative z-10 w-full h-full overflow-hidden rounded flex items-center justify-center ${currentMedia ? '' : 'bg-black/20'}`}>
+                                        {currentMedia ? (
+                                            currentMedia.type === 'video' ? 
+                                                <video src={currentMedia.url} className="w-full h-full object-contain" controls autoPlay loop muted /> :
+                                                <img src={currentMedia.url} className="w-full h-full object-contain" alt="Frame Content" />
+                                        ) : (
+                                            <div className="text-center opacity-50 flex flex-col items-center p-4">
+                                                <p className={`text-sm ${isDark ? 'text-white' : 'text-black font-bold'}`}>Upload Image/Video or Use AI Template</p>
+                                                <div className="text-4xl mt-2">🖼️</div>
+                                            </div>
+                                        )}
+                                        {mediaList.length > 1 && (
+                                            <>
+                                                <button onClick={() => setCurrentMediaIndex(prev => Math.max(0, prev - 1))} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/80">‹</button>
+                                                <button onClick={() => setCurrentMediaIndex(prev => Math.min(mediaList.length - 1, prev + 1))} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/80">›</button>
+                                                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                                                    {mediaList.map((_, idx) => (<div key={idx} className={`w-2 h-2 rounded-full ${idx === currentMediaIndex ? 'bg-cyan-400' : 'bg-gray-500'}`}></div>))}
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Controls */}
+                            <div className="flex flex-wrap justify-center gap-2 py-2 no-print" data-html2canvas-ignore="true">
+                                <label className="cursor-pointer bg-blue-700 hover:bg-blue-600 text-white px-3 py-1.5 rounded text-[10px] font-bold shadow-lg flex items-center gap-1 hover:scale-105 transition-transform cyber-button text-white" title="Upload Image/Video">
+                                    <span>⬆️</span> UPLOAD
+                                    <input type="file" className="hidden" accept="image/*,video/*" onChange={handleFileUpload} />
+                                </label>
+                                <button onClick={() => setShowAiBuilder(true)} className="bg-purple-700 hover:bg-purple-600 text-white px-3 py-1.5 rounded text-[10px] font-bold shadow-lg flex items-center gap-1 hover:scale-105 transition-transform" title="Generate Prompt"><span>🎨</span> AI Builder</button>
+                                <div className="relative group">
+                                    <button className="bg-green-700 hover:bg-green-600 text-white px-3 py-1.5 rounded text-[10px] font-bold shadow-lg flex items-center gap-1">💾 Save</button>
+                                    <div className="absolute bottom-full left-0 mb-1 w-24 bg-gray-800 rounded shadow-xl hidden group-hover:block z-20">
+                                        <button onClick={() => handleSaveFile('jpg')} className={`block w-full text-left px-4 py-2 text-[10px] hover:bg-gray-700 ${isDark ? 'text-white' : 'text-white'}`}>JPG</button>
+                                        <button onClick={() => handleSaveFile('png')} className={`block w-full text-left px-4 py-2 text-[10px] hover:bg-gray-700 ${isDark ? 'text-white' : 'text-white'}`}>PNG</button>
+                                        <button onClick={() => handleSaveFile('pdf')} className={`block w-full text-left px-4 py-2 text-[10px] hover:bg-gray-700 ${isDark ? 'text-white' : 'text-white'}`}>PDF</button>
+                                        <button onClick={() => handleSaveFile('mpeg')} className={`block w-full text-left px-4 py-2 text-[10px] hover:bg-gray-700 ${isDark ? 'text-white' : 'text-white'}`}>MPEG (Video)</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* RIGHT COLUMN: Calendar Content */}
+                        <div className={`flex flex-col ${isHorizontal ? 'h-full' : 'w-full min-h-[300px]'}`}>
+                            <div className="flex-1 w-full h-full">
+                                <CalendarView 
+                                    date={date} setDate={setDate} type={selectedCalendar} days={days} 
+                                    onDayClick={(day: any) => setSelectedTaskDate(`${day.year}-${String(day.month + 1).padStart(2, '0')}-${String(day.day).padStart(2, '0')}`)} 
+                                    isDark={isDark} viewFormat={format} period={period} contentMode={contentMode}
+                                    onAddEventClick={(day: any) => { setIsEventModalOpen(true); }}
+                                    apiHolidays={apiHolidays}
+                                />
+                            </div>
+                            {/* Holiday List moved here for Horizontal View and Vertical View */}
+                             <HolidayBlock />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Control Menu */}
+                <div className={`grid grid-cols-2 md:grid-cols-3 gap-4 p-4 rounded w-full transition-all ${isDark ? 'glass-panel' : 'bg-white border border-gray-300'}`}>
+                    <div>
+                        <label className={`text-[10px] block mb-1 font-bold ${isDark ? 'text-cyan-400' : 'text-black'}`}>Format & Period</label>
+                        <select value={`${format}-${period}`} onChange={(e) => { const [f, p] = e.target.value.split('-'); setFormat(f as any); setPeriod(p as any); }} className={`w-full border text-xs rounded p-2 transition-colors ${isDark ? 'bg-black border-gray-600 text-white hover:border-cyan-500 focus:border-cyan-500' : 'bg-white border-gray-400 text-black hover:border-black font-bold'}`}>
+                            <optgroup label="Vertical">
+                                <option value={`${CalendarViewFormat.VERTICAL}-${CalendarPeriod.DAILY}`}>Vertical Daily</option>
+                                <option value={`${CalendarViewFormat.VERTICAL}-${CalendarPeriod.MONTHLY}`}>Vertical Monthly</option>
+                                <option value={`${CalendarViewFormat.VERTICAL}-${CalendarPeriod.YEARLY}`}>Vertical Yearly</option>
+                            </optgroup>
+                            <optgroup label="Horizontal">
+                                <option value={`${CalendarViewFormat.HORIZONTAL}-${CalendarPeriod.DAILY}`}>Horizontal Daily</option>
+                                <option value={`${CalendarViewFormat.HORIZONTAL}-${CalendarPeriod.MONTHLY}`}>Horizontal Monthly</option>
+                                <option value={`${CalendarViewFormat.HORIZONTAL}-${CalendarPeriod.YEARLY}`}>Horizontal Yearly</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div>
+                        <label className={`text-[10px] block mb-1 font-bold ${isDark ? 'text-cyan-400' : 'text-black'}`}>Region</label>
+                        <select value={country} onChange={(e) => setCountry(e.target.value)} className={`w-full border text-xs rounded p-2 transition-colors ${isDark ? 'bg-black border-gray-600 text-white hover:border-cyan-500 focus:border-cyan-500' : 'bg-white border-gray-400 text-black hover:border-black font-bold'}`}>
+                            {COUNTRIES.map(c => <option key={c.code} value={c.code}>{c.code} - {c.name}</option>)}
+                        </select>
+                    </div>
+                    <div>
+                         <label className={`text-[10px] block mb-1 font-bold ${isDark ? 'text-cyan-400' : 'text-black'}`}>Data View</label>
+                         <select value={contentMode} onChange={(e) => setContentMode(e.target.value as any)} className={`w-full border text-xs rounded p-2 transition-colors ${isDark ? 'bg-black border-gray-600 text-white hover:border-cyan-500 focus:border-cyan-500' : 'bg-white border-gray-400 text-black hover:border-black font-bold'}`}>
+                             {selectedCalendar === CalendarType.GREGORIAN ? (
+                                <option value={CalendarContentMode.NATIVE_ONLY}>Gregorian (Masehi) Only</option>
+                             ) : (
+                                <>
+                                    <option value={CalendarContentMode.DUAL}>Gregorian - {selectedCalendar}</option>
+                                    <option value={CalendarContentMode.NATIVE_ONLY}>{selectedCalendar} Only</option>
+                                </>
+                             )}
+                         </select>
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
     if (!isLoggedIn) {
         return (
              <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
                 <Background isDark={true} showStars={true} />
-                <div className="glass-panel p-8 rounded-2xl max-w-md w-full text-center border border-cyan-500 shadow-2xl neon-border relative z-10 animate-fade-in">
-                    <h1 className="text-5xl font-fredoka text-white mb-8 neon-text uppercase tracking-widest">DIGICALD</h1>
-                    <p className="text-cyan-400 font-mono text-xs mb-8 tracking-[0.3em]">Neural Interface Online</p>
-                    <button onClick={handleLogin} className="cyber-button w-full text-white font-bold py-4 rounded-lg shadow-lg flex items-center justify-center gap-3 mb-4 hover:scale-105 transition-transform">
-                        <span className="text-xl">G</span> Login with Neural ID
+                <div className="glass-panel p-8 rounded-2xl max-w-md w-full text-center border border-cyan-500 shadow-2xl neon-border relative z-10">
+                    <h1 className="text-5xl font-fredoka text-white mb-8 neon-text" data-text="DIGICALD">DIGICALD</h1>
+                    <p className="text-cyan-400 font-mono text-xs mb-6 tracking-widest">INITIALIZING NEURAL INTERFACE...</p>
+                    <button onClick={handleLogin} className="cyber-button w-full text-white font-bold py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 mb-4 hover:scale-105">
+                        <span className="text-xl">G</span> Login with Google
                     </button>
-                    <button onClick={() => { setIsLoggedIn(true); setIsGuest(true); }} className="w-full bg-gray-800/50 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-lg border border-gray-600 text-xs font-mono">GUEST ACCESS MODE</button>
-                    <p className="text-[10px] text-gray-500 mt-4">* login as guest, limit access</p>
+                    <button onClick={() => { setIsLoggedIn(true); setIsGuest(true); }} className="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-lg shadow-lg transition-transform hover:scale-105 text-xs font-mono border border-gray-600">GUEST ACCESS MODE</button>
+                    <p className="text-[10px] text-gray-500 mt-2">* login as guest, limit access</p>
                 </div>
             </div>
         );
@@ -910,7 +1204,8 @@ function App() {
 
     return (
         <div className={`min-h-screen relative pb-10 transition-colors duration-500 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>
-            <Background isDark={isDark} themeName={appSettings.themeName || selectedCalendar} showStars={showStars} />
+            <Background isDark={isDark} themeName={appSettings.themeName} showStars={showStars} />
+            
             <Header 
                 onToggleMenu={() => setIsMenuOpen(!isMenuOpen)} 
                 onToggleSettings={() => setIsSettingsOpen(true)} 
@@ -923,23 +1218,46 @@ function App() {
                 installPwa={handlePWAInstall}
             />
             
-            <MainMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} onShowGuide={() => setShowGuide(true)} onShowTerms={() => setShowTerms(true)} onShowFAQ={() => setShowFAQ(true)} onShowFindUs={() => setShowFindUs(true)} />
+            <MainMenu 
+                isOpen={isMenuOpen} 
+                onClose={() => setIsMenuOpen(false)} 
+                onViewChange={(cal: CalendarType) => { setSelectedCalendar(cal); setView('sub'); }} 
+                onShowGuide={() => setShowGuide(true)}
+                onShowTerms={() => setShowTerms(true)}
+                onShowFAQ={() => setShowFAQ(true)}
+                onShowContact={() => setShowContact(true)}
+                onShowFindUs={() => setShowFindUs(true)}
+            />
             <LanguageMenu isOpen={isLangMenuOpen} onClose={() => setIsLangMenuOpen(false)} currentLang={appSettings.language} onLangChange={(l: string) => setAppSettings({...appSettings, language: l})} />
-            <SettingsMenu isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} settings={appSettings} onUpdate={setAppSettings} onLogout={() => { setIsLoggedIn(false); setView('main'); }} onPrintPreview={(type: string) => setPrintPreviewType(type)} toggleFullscreen={() => setAppSettings({...appSettings, isFullscreen: !appSettings.isFullscreen})} onExport={handleExport} />
+
+            <SettingsMenu 
+                isOpen={isSettingsOpen} 
+                onClose={() => setIsSettingsOpen(false)} 
+                settings={appSettings} 
+                onUpdate={setAppSettings} 
+                onLogout={() => { setIsLoggedIn(false); setView('main'); }} 
+                onPrintPreview={(type: string) => setPrintPreviewType(type)} 
+                toggleFullscreen={() => setAppSettings({...appSettings, isFullscreen: !appSettings.isFullscreen})}
+                onExport={handleExport}
+            />
             
-            <TaskModal isOpen={!!selectedTaskDate} onClose={() => setSelectedTaskDate(null)} dateStr={selectedTaskDate} tasks={tasks} onSaveTask={setTasks} isDark={isDark} />
+            {/* All Modals */}
+            <TaskModal isOpen={!!selectedTaskDate} onClose={() => setSelectedTaskDate(null)} dateStr={selectedTaskDate} tasks={tasks} onSaveTask={saveTasksToStorage} monthDays={days} settings={appSettings} />
+            <EventModal isOpen={isEventModalOpen} onClose={() => setIsEventModalOpen(false)} onSave={handleAddEvent} />
             <AiTemplateBuilder isOpen={showAiBuilder} onClose={() => setShowAiBuilder(false)} onImageGenerated={handleImageGenerated} isDark={isDark} />
             <ImageResultModal isOpen={showImageResult} onClose={() => setShowImageResult(false)} imageSrc={generatedImageTemp} onSave={handleSaveImage} />
             <TextModal isOpen={showGuide} onClose={() => setShowGuide(false)} title="Usage Guide" content={guideContent} />
             <TextModal isOpen={showTerms} onClose={() => setShowTerms(false)} title="Terms & Policy" content={termsContent} />
             <TextModal isOpen={showFAQ} onClose={() => setShowFAQ(false)} title="FAQ" content={faqContent} />
+            <ContactModal isOpen={showContact} onClose={() => setShowContact(false)} />
             <FindUsModal isOpen={showFindUs} onClose={() => setShowFindUs(false)} />
             <PrintPreviewModal isOpen={!!printPreviewType} onClose={() => setPrintPreviewType(null)} previewType={printPreviewType} />
-            <TutorialOverlay isOpen={showTutorial} onClose={() => setShowTutorial(false)} />
+            <TutorialOverlay isOpen={showTutorial} onClose={handleTutorialClose} />
 
-            <main className="pt-20 px-4 container mx-auto flex flex-col gap-6 items-center relative z-10 max-w-7xl">
-                {view === 'main' ? (
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-6 max-w-6xl animate-fade-in-up mt-10">
+            <main className="pt-20 px-4 container mx-auto flex flex-col gap-6 min-h-[80vh] items-center relative z-10">
+                {view === 'sub' && renderSubPage()}
+                {view === 'main' && (
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-6 max-w-6xl animate-fade-in-up">
                          {[
                                 { type: CalendarType.GREGORIAN, img: ASSETS.ICON_GREGORIAN },
                                 { type: CalendarType.HIJRI, img: ASSETS.ICON_HIJRI },
@@ -952,117 +1270,33 @@ function App() {
                                 { type: CalendarType.IRANIAN, img: ASSETS.ICON_IRAN },
                                 { type: CalendarType.HINDI, img: ASSETS.ICON_IRAN }, 
                             ].map((item) => (
-                                <button key={item.type} onClick={() => { if (isGuest && item.type !== CalendarType.GREGORIAN) { alert("Neural Login Required for this data stream."); return; } setSelectedCalendar(item.type); setView('sub'); }}
-                                    className={`flex flex-col items-center justify-center p-6 rounded-2xl transition-all hover:scale-105 group border ${isDark ? 'glass-panel border-cyan-500/20 hover:border-cyan-400' : 'bg-white border-gray-100 shadow-lg hover:shadow-2xl'}`}>
-                                    <div className="w-24 h-24 mb-4 relative"><img src={item.img} alt={item.type} className={`w-full h-full object-contain ${isDark ? 'drop-shadow-[0_0_15px_rgba(6,182,212,0.6)]' : ''}`} /></div>
-                                    <span className={`text-xs md:text-sm font-fredoka text-center font-bold tracking-widest ${isDark ? 'text-cyan-300' : 'text-gray-800'}`}>{item.type}</span>
+                                <button 
+                                    key={item.type} 
+                                    onClick={() => {
+                                        if (isGuest && item.type !== CalendarType.GREGORIAN) { alert("Please login first to access this menu"); return; }
+                                        setSelectedCalendar(item.type);
+                                        setView('sub');
+                                    }}
+                                    className={`flex flex-col items-center justify-center p-4 rounded-xl transition-all hover:scale-105 group ${isDark ? 'glass-panel hover:bg-white/10 hover:neon-border' : 'bg-white shadow hover:shadow-lg border border-gray-100'}`}
+                                >
+                                    <div className="w-20 h-20 mb-2 relative"><img src={item.img} alt={item.type} className={`w-full h-full object-contain ${isDark ? 'drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]' : ''}`} /></div>
+                                    <span className={`text-sm font-fredoka text-center font-bold ${isDark ? 'text-cyan-300 group-hover:neon-text' : 'text-gray-700'}`}>{item.type}</span>
                                 </button>
                             ))}
                     </div>
-                ) : (
-                    <div className="w-full flex flex-col gap-6 animate-fade-in">
-                        <div ref={printRef} className="flex flex-col gap-6">
-                            {/* Proportional Layout Area */}
-                            <div className={`flex gap-6 w-full ${isHorizontal ? 'flex-col lg:flex-row' : 'flex-col'}`}>
-                                {/* LEFT/TOP FRAME */}
-                                <div className={`relative transition-all duration-500 ${isHorizontal ? 'w-full lg:w-[45%]' : 'w-full aspect-[16/9]'}`}>
-                                    <div className={`relative w-full h-full p-2 border-[5px] rounded-2xl frame-blink ${isDark ? 'border-cyan-500 shadow-[0_0_20px_#06b6d4]' : 'border-blue-900 shadow-2xl bg-white'}`}>
-                                        <div className="relative w-full h-full overflow-hidden rounded-xl bg-black/40 flex items-center justify-center">
-                                            {mediaList[currentMediaIndex] ? (
-                                                mediaList[currentMediaIndex].type === 'video' 
-                                                ? <video src={mediaList[currentMediaIndex].url} className="w-full h-full object-contain" autoPlay muted loop />
-                                                : <img src={mediaList[currentMediaIndex].url} className="w-full h-full object-contain" />
-                                            ) : (
-                                                <div className="text-center opacity-30 p-10"><p className="text-4xl">🖼️</p><p className="text-xs uppercase font-bold mt-2">No Visual Uplink</p></div>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-center gap-2 mt-4 no-print">
-                                        <label className="cyber-button px-4 py-2 rounded text-[10px] font-bold cursor-pointer">UPLOAD <input type="file" className="hidden" onChange={handleFileUpload} /></label>
-                                        <button id="ai-btn" onClick={() => setShowAiBuilder(true)} className="cyber-button px-4 py-2 rounded text-[10px] font-bold">AI BUILDER</button>
-                                        <div className="relative group">
-                                            <button className="cyber-button px-4 py-2 rounded text-[10px] font-bold">SAVE AS ▼</button>
-                                            <div className="absolute top-full left-0 mt-1 w-32 bg-[#0f172a] border border-cyan-500 rounded z-[50] hidden group-hover:block shadow-2xl">
-                                                <button onClick={() => handleSaveFile('jpg')} className={`w-full text-left p-2 text-[10px] border-b border-cyan-900/30 hover:bg-cyan-900/50 ${isDark ? 'text-cyan-400' : 'text-cyan-400 font-bold'}`}>JPG</button>
-                                                <button onClick={() => handleSaveFile('png')} className={`w-full text-left p-2 text-[10px] border-b border-cyan-900/30 hover:bg-cyan-900/50 ${isDark ? 'text-cyan-400' : 'text-cyan-400 font-bold'}`}>PNG</button>
-                                                <button onClick={() => handleSaveFile('pdf')} className={`w-full text-left p-2 text-[10px] border-b border-cyan-900/30 hover:bg-cyan-900/50 ${isDark ? 'text-cyan-400' : 'text-cyan-400 font-bold'}`}>PDF</button>
-                                                <button onClick={() => handleSaveFile('mpeg')} className={`w-full text-left p-2 text-[10px] hover:bg-cyan-900/50 ${isDark ? 'text-cyan-400' : 'text-cyan-400 font-bold'}`}>MPEG (Video)</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* RIGHT/BOTTOM CALENDAR */}
-                                <div className={`flex flex-col gap-4 ${isHorizontal ? 'w-full lg:w-[55%]' : 'w-full'}`}>
-                                    <div className={`flex justify-between items-center w-full p-1 rounded-xl shadow-lg ${isDark ? 'bg-gradient-to-r from-cyan-400 to-white' : 'bg-gray-200 border border-gray-400'}`}>
-                                        <button onClick={handlePrev} className="px-6 py-3 font-bold text-2xl bg-black/10 hover:bg-black/20 rounded-l-lg transition-colors">&lt;</button>
-                                        <div className="text-center flex-1 py-2 uppercase font-tech tracking-tighter text-black">
-                                            <span className="text-base md:text-xl font-fredoka font-bold">{navLabel}</span>
-                                        </div>
-                                        <button onClick={handleNext} className="px-6 py-3 font-bold text-2xl bg-black/10 hover:bg-black/20 rounded-r-lg transition-colors">&gt;</button>
-                                    </div>
-                                    <div className="w-full flex-1">
-                                        <CalendarView date={date} type={selectedCalendar} days={days} 
-                                            onDayClick={(day: any) => setSelectedTaskDate(`${day.year}-${String(day.month + 1).padStart(2, '0')}-${String(day.day).padStart(2, '0')}`)} 
-                                            isDark={isDark} viewFormat={format} period={period} contentMode={contentMode} apiHolidays={apiHolidays} />
-                                    </div>
-                                    <div className={`w-full border p-3 rounded-lg ${isDark ? 'bg-black/30 border-cyan-500/20' : 'bg-white border-gray-300 shadow-md'}`}>
-                                        <h4 className={`font-bold text-xs uppercase mb-2 ${isDark ? 'text-cyan-400' : 'text-blue-900'}`}>Hari Libur Nasional ({country})</h4>
-                                        <div className="max-h-32 overflow-y-auto text-[10px] md:text-xs">
-                                            {holidaysThisMonth.length > 0 ? holidaysThisMonth.map((h, i) => (
-                                                <div key={i} className="flex gap-2 py-1 border-b border-gray-100 last:border-0">
-                                                    <span className="text-red-600 font-bold">{h.date}</span>
-                                                    <span className={isDark ? 'text-white' : 'text-gray-700'}>: {h.localName || h.name}</span>
-                                                </div>
-                                            )) : <p className="opacity-50 italic">Tidak ada hari libur di bulan ini.</p>}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Bottom Controls */}
-                        <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 p-6 rounded-2xl w-full no-print ${isDark ? 'glass-panel border-cyan-500/20 shadow-[0_0_20px_rgba(0,0,0,0.5)]' : 'bg-white border-gray-200 shadow-2xl'}`}>
-                            <div className="flex flex-col gap-1">
-                                <label className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-1 ${isDark ? 'text-cyan-400' : 'text-gray-500'}`}>Format & Period</label>
-                                <select value={`${format}-${period}`} onChange={(e) => { const [f, p] = e.target.value.split('-'); setFormat(f as any); setPeriod(p as any); }}
-                                    className={`w-full text-xs rounded-lg p-3 transition-all outline-none border ${isDark ? 'bg-black border-cyan-500/30 text-white focus:border-cyan-400' : 'bg-gray-100 border-gray-300 text-black font-bold focus:border-black'}`}>
-                                    <optgroup label="Vertikal Layout"><option value={`${CalendarViewFormat.VERTICAL}-${CalendarPeriod.DAILY}`}>Daily Vertikal</option><option value={`${CalendarViewFormat.VERTICAL}-${CalendarPeriod.MONTHLY}`}>Monthly Vertikal</option><option value={`${CalendarViewFormat.VERTICAL}-${CalendarPeriod.YEARLY}`}>Yearly Vertikal</option></optgroup>
-                                    <optgroup label="Horizontal Layout"><option value={`${CalendarViewFormat.HORIZONTAL}-${CalendarPeriod.DAILY}`}>Daily Horizontal</option><option value={`${CalendarViewFormat.HORIZONTAL}-${CalendarPeriod.MONTHLY}`}>Monthly Horizontal</option><option value={`${CalendarViewFormat.HORIZONTAL}-${CalendarPeriod.YEARLY}`}>Yearly Horizontal</option></optgroup>
-                                </select>
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                <label className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-1 ${isDark ? 'text-cyan-400' : 'text-gray-500'}`}>Target Region</label>
-                                <select value={country} onChange={(e) => setCountry(e.target.value)}
-                                    className={`w-full text-xs rounded-lg p-3 transition-all outline-none border ${isDark ? 'bg-black border-cyan-500/30 text-white focus:border-cyan-400' : 'bg-gray-100 border-gray-300 text-black font-bold focus:border-black'}`}>
-                                    {COUNTRIES.map(c => <option key={c.code} value={c.code}>{c.code} - {c.name}</option>)}
-                                </select>
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                <label className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-1 ${isDark ? 'text-cyan-400' : 'text-gray-500'}`}>Data Interface</label>
-                                <select value={contentMode} onChange={(e) => setContentMode(e.target.value as any)}
-                                    className={`w-full text-xs rounded-lg p-3 transition-all outline-none border ${isDark ? 'bg-black border-cyan-500/30 text-white focus:border-cyan-400' : 'bg-gray-100 border-gray-300 text-black font-bold focus:border-black'}`}>
-                                    {selectedCalendar === CalendarType.GREGORIAN ? (
-                                        <option value={CalendarContentMode.NATIVE_ONLY}>Gregorian (Masehi) Only</option>
-                                    ) : (
-                                        <><option value={CalendarContentMode.DUAL}>Gregorian + Native</option><option value={CalendarContentMode.NATIVE_ONLY}>Native Data Only</option></>
-                                    )}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
                 )}
             </main>
-
-            <footer className="w-full pt-10 pb-6 mt-10 border-t border-gray-700 flex flex-col items-center justify-center gap-4 bg-[#0f172a] text-white no-print relative z-10">
-                <a href="https://sociabuzz.com/syukrankatsiron/tribe" target="_blank" rel="noreferrer" className="bg-[#FF5E5B] hover:bg-[#ff4542] text-white font-bold text-xs px-6 py-2.5 rounded-full shadow-lg transition-all hover:scale-105 uppercase tracking-wider text-white no-underline">Support us</a>
-                <div className="flex flex-col items-center gap-2">
-                     <a href="mailto:hijr.time@gmail.com" className="text-white hover:text-cyan-400 font-bold text-sm flex items-center gap-2 transition-colors no-underline"><span>✉️</span> HUBUNGI KAMI</a>
-                     <a href="https://ko-fi.com/syukran/tip" target="_blank" rel="noreferrer" className="mt-1">
-                        <img src={ASSETS.BTN_KOFI} alt="Buy me a Ko-fi" className="h-10 hover:scale-105 transition-transform" />
+            <footer className="w-full py-6 mt-8 border-t border-gray-700 flex flex-col items-center justify-center gap-2 bg-[#0f172a] text-white no-print relative z-10">
+                <a href="https://sociabuzz.com/syukrankatsiron/tribe" target="_blank" rel="noreferrer" className="bg-[#FF5E5B] hover:bg-[#ff4542] text-white font-jannah text-[12px] px-4 py-2 rounded-full shadow-lg flex items-center gap-2 transition-transform hover:scale-105">Support us</a>
+                <div className="flex flex-col items-center gap-1">
+                     <a href="mailto:hijr.time@gmail.com" className="text-white hover:text-cyan-400 font-bold text-sm flex items-center gap-1"><span>✉️</span> Hubungi kami</a>
+                     <a href="https://ko-fi.com/syukran/tip" target="_blank" rel="noreferrer">
+                        <img src={ASSETS.BTN_KOFI} alt="Buy me a Ko-fi" className="h-8 hover:scale-105 transition-transform" />
                      </a>
                 </div>
-                <div className="text-center mt-4">
-                     <p className="font-fredoka text-sm text-gray-500 font-bold uppercase tracking-[0.2em]">Te-eR Inovative @2025</p>
+                <div className="text-center relative mt-2">
+                     <p className="font-jannah text-[12px] text-gray-400 italic opacity-50">by Te_eR Inovative</p>
+                     <p className="font-jannah text-[9px] text-white">© {new Date().getFullYear()}</p>
                 </div>
             </footer>
         </div>
